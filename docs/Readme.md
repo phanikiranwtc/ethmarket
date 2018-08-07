@@ -38,8 +38,6 @@ Refer to the source files for the exact code.
 module.exports = {
   networks : {
     ganache: {
-      // I am using Ganache for the development
-      // You can find the ganache configuration details on their settings screen
       host:'127.0.0.1',
       port: 7545,
       network_id: "5777",
