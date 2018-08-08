@@ -99,9 +99,13 @@ contract MarketPlace {
      *
     */
     function createStoreFront( string storeName, string storeDescription ) public onlyStoreOwner returns(uint){
+        uint storeCount = storeFrontMap[msg.sender].length;
 
-        address[] storage stores = storeFrontMap[msg.sender];
-        stores[stores.length] = new Store( storeName, storeDescription, nextStoreId );
+        if (storeCount == 0) {
+          storeFrontMap[msg.sender].length = 1;
+        }
+
+        storeFrontMap[msg.sender][storeCount] = address(new Store( storeName, storeDescription, nextStoreId ));
 
         return nextStoreId++;
     }
