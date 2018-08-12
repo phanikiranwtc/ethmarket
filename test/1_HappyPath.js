@@ -3,11 +3,13 @@ var Store = artifacts.require("Store");
 
 contract('MarketPlace', function(accounts){
   let myContract;
+  let currentStore;
 
-  describe("Report for the Admin Side of the Contracts", function(){
-      MarketPlace.deployed().then(function(instance) {
-        myContract = instance;
-      });
+  MarketPlace.deployed().then(function(instance) {
+    myContract = instance;
+  });
+
+  describe("1. Test Report for the Admin Side of the Contracts", function(){
 
       it("The first account pays for the deployment. Hence, the balance of the first account must be less than 100 Ether", async function() {
           let balance = await web3.eth.getBalance(web3.eth.accounts[0]);
@@ -38,16 +40,73 @@ contract('MarketPlace', function(accounts){
         assert.include(storeOwnerCreated.receipt.status, "0x1", "Store owner should have been created by the Admin user!");
       });
 
-      it("A store owner shall be able to create one or more stores!", async function(){
-          let storeCreated = await myContract.createStoreFront("Store Acct3-1", "1st store of 4th account!", {from:accounts[3]});
-          console.log(storeCreated);
-          assert.include(storeCreated.receipt.status, "0x1", "Store should have been created by the store owner!");
+  });
 
-          //storeCreated = await myContract.createStoreFront("Store Acct3-2", "2nd store of 4th account!", {from:accounts[3]});
-          // assert.include(storeCreated.receipt.status, "0x1", "Store should have been created by the store owner!");
+  describe("2. Test Report for the Store Side of the Contract", function(){
 
-      });
+    it("A store owner shall be able to create one or more stores!", async function(){
+        let storeCreated = await myContract.createStoreFront("Store Acct3-1", "1st store of 4th account!", {from:accounts[3]});
+        assert.include(storeCreated.receipt.status, "0x1", "Store should have been created by the store owner!");
 
-
+        storeCreated = await myContract.createStoreFront("Store Acct3-2", "2nd store of 4th account!", {from:accounts[3]});
+        assert.include(storeCreated.receipt.status, "0x1", "Store should have been created by the store owner!");
     });
+
+    it("After successful creation of a store, a new store event shall be fired!", async function(){
+        let storeCreatedTx = await myContract.createStoreFront("Store Acct3-1", "1st store of 4th account!", {from:accounts[3]});
+        assert.equal(storeCreatedTx.receipt.logs.length, 1, "Store creation function should have created an event as well!");
+    });
+
+    it("Get all the stores for a given store owner!", async function() {
+        let stores = await myContract.getStores(accounts[3]);
+        assert(stores.length == 3, "Two stores were expected!");
+        // console.log(stores);
+    });
+  });
+
+  describe("3. Test Report for the Products of a given store!", function(){
+    let productIdForDetails;
+
+    it("A store owner shall be able to create a product in a store!", async function(){
+      let stores = await myContract.getStores(accounts[3]);
+
+      // Create products for the first accounts
+      currentStore = Store.at(stores[0]);
+      let productReceipt = await currentStore.addProductToTheStore(
+                              "Galaxy Note9",
+                              "One of the latest Samsung phones",
+                              10000000000000000,
+                              3000,
+                              {from:accounts[3]});
+
+      assert.equal(productReceipt.receipt.status, "0x1", "The success code must be 1!");
+    });
+
+    it("For a given store owner, you shall be able to retrieve all of thheir products!", async function(){
+      let stores = await myContract.getStores(accounts[3]);
+
+      // Create products for the first accounts
+      currentStore = Store.at(stores[0]);
+
+      let productReceipt = await currentStore.addProductToTheStore(
+                              "iPhone X",
+                              "Latest version of iPhone",
+                              1000000000000000,
+                              3000,
+                              {from:accounts[3]});
+
+      let products = await currentStore.getProducts();
+      productIdForDetails = products[0].toNumber();
+      assert.isAtLeast(products.length, 2, "By this time, this product must have at least two products!");
+    });
+
+    it ("For a given Product ID, it shall return the corresponding product details", async function(){
+      let productDetails = await currentStore.getProductDetails(productIdForDetails);
+      console.log(productDetails);
+      assert.include(productDetails[1], "Samsung", "The product description does not match!");
+    });
+
+  });
+
+
 });

@@ -30,6 +30,13 @@ contract MarketPlace {
         nextStoreId = 1;
     }
 
+    event NewStore (
+      string storeName,
+      string storeDescription,
+      address storeOwner,
+      address storeAddress
+    );
+
     /**
      * Only SuperAdmin shall be able to create an Admin user
     */
@@ -93,21 +100,37 @@ contract MarketPlace {
     }
 
     /**
+    * This function shall return all the store owners address in the market place
+    */
+    function getStoreOwners() public view returns(address[]) {
+      return storeOwners;
+    }
+
+    /**
      * A store owner shall be able to create one or more stores.
      * The created store will be associated with the store owner using storeFrontMap, where the store owner's
      * address is a key and the value is a map of storeId and Store.
      *
     */
-    function createStoreFront( string storeName, string storeDescription ) public onlyStoreOwner returns(uint){
+    function createStoreFront( string storeName, string storeDescription ) public onlyStoreOwner returns(address){
         uint storeCount = storeFrontMap[msg.sender].length;
 
         if (storeCount == 0) {
           storeFrontMap[msg.sender].length = 1;
+        } else {
+          storeFrontMap[msg.sender].length = storeCount + 1;
         }
 
         storeFrontMap[msg.sender][storeCount] = address(new Store( storeName, storeDescription, nextStoreId ));
+        nextStoreId++;
 
-        return nextStoreId++;
+        emit NewStore(
+                storeName,
+                storeDescription,
+                msg.sender,
+                storeFrontMap[msg.sender][storeCount] );
+
+        return storeFrontMap[msg.sender][storeCount];
     }
 
     /**

@@ -13,14 +13,13 @@ pragma solidity ^0.4.22;
 */
 contract Store {
     // Onwer is the actual store owner who is creating the store.
-    address owner;
+    address private owner;
 
-    string storeName;
-    string description;
-    uint storeId;
-    uint nextProductId;
-
-    mapping (uint => Product) products;
+    string public storeName;
+    string public description;
+    uint private storeId;
+    uint private nextProductId;
+    Product[] public products;
 
     enum ProductStatus {
         ACTIVE,
@@ -36,16 +35,28 @@ contract Store {
         ProductStatus status;
     }
 
+    event NewProduct(
+      uint productId,
+      string productName,
+      string description,
+      uint price,
+      uint quantity
+      );
+
+    event LogAsEvent(address param1, address param2, string param3);
+
     constructor(
             string _storeName,
             string _description,
             uint _storeId ) public {
 
-        owner = msg.sender;
+        owner = tx.origin;
         storeName = _storeName;
         storeId = _storeId;
         description = _description;
-        nextProductId = 1;
+        nextProductId = 0;
+
+        // emit LogAsEvent(msg.sender, owner, "Constructor");
     }
 
     /**
@@ -53,7 +64,7 @@ contract Store {
      *
     */
     modifier onlyOwner {
-        require( (owner == msg.sender), "Only an Administrator can invoke this function.");
+        require( (owner == msg.sender), "Only a store owner can invoke this function!");
         _;
     }
 
@@ -70,15 +81,32 @@ contract Store {
             uint price,
             uint quantity ) public onlyOwner returns(uint) {
 
-        products[nextProductId] = Product(
-            nextProductId,
-            productName,
-            productDesc,
-            price,
-            quantity,
-            ProductStatus.ACTIVE );
+            products.length += 1;
+            products[nextProductId] = Product(
+                nextProductId,
+                productName,
+                productDesc,
+                price,
+                quantity,
+                ProductStatus.ACTIVE );
 
-        return nextProductId++;
+            emit NewProduct(
+              nextProductId,
+              productName,
+              productDesc,
+              price,
+              quantity
+              );
+
+              /*
+              emit LogAsEvent(
+                  msg.sender,
+                  owner,
+                  "Manually check if they are same or not!"
+              );
+              */
+
+            return nextProductId++;
     }
 
     /**
@@ -121,6 +149,48 @@ contract Store {
         products[productId].status = ProductStatus.REMOVED;
     }
 
+    /**
+    * getProducts will return all the products of this store.
+    */
+    function getProducts() public view returns( uint[] ) {
+
+      uint8 activeProdCount = 0;
+
+      for (uint8 prodCount=0; prodCount<products.length; prodCount++) {
+          if (products[prodCount].status == ProductStatus.ACTIVE) {
+              activeProdCount++;
+          }
+      }
+
+      uint[] memory activeProductIds = new uint[](activeProdCount);
+
+      if (activeProdCount > 0) {
+
+        uint8 tmpCount = 0;
+
+        for (prodCount=0; prodCount<products.length; prodCount++) {
+            if (products[prodCount].status == ProductStatus.ACTIVE) {
+              activeProductIds[tmpCount] = products[prodCount].productId;
+              tmpCount++;
+            }
+        }
+      }
+
+
+      return activeProductIds;
+    }
+
+    /*
+    * For a given product identifier of the store, this method will return the product details.
+    */
+    function getProductDetails(uint productId) public view returns(string, string, uint, uint, ProductStatus) {
+
+        return ( products[productId].productName,
+                 products[productId].description,
+                 products[productId].price,
+                 products[productId].quantity,
+                 products[productId].status );
+    }
 
     /**
      * The shopper can buy this product using this function.
@@ -143,7 +213,7 @@ contract Store {
      * A store owner can withdraw fund from a given store
     */
     function withdrawFund(uint withdrawAmount) public payable onlyOwner returns(uint) {
-        require(address(this).balance >= withdrawAmount, "The current store's balance must be greater than the withdrawal amount!");
+        require(address(this).balance >= withdrawAmount, "The current store balance amount must be greater than the withdrawal amount!");
         owner.transfer(withdrawAmount);
     }
 
