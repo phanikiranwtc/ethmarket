@@ -2,6 +2,8 @@ var MarketPlace = artifacts.require("MarketPlace");
 var Store = artifacts.require("Store");
 
 contract('MarketPlace', function(accounts){
+  let tryCatch = require("./exceptions.js").tryCatch;
+  let errTypes = require("./exceptions.js").errTypes;
   let myContract;
   let currentStore;
 
@@ -102,11 +104,89 @@ contract('MarketPlace', function(accounts){
 
     it ("For a given Product ID, it shall return the corresponding product details", async function(){
       let productDetails = await currentStore.getProductDetails(productIdForDetails);
-      console.log(productDetails);
       assert.include(productDetails[1], "Samsung", "The product description does not match!");
     });
 
   });
 
+  describe("4. Test Report for the Shoppers!", function(){
+
+    let currentProductId = -1;
+
+    it("A shopper shall be able to access all the stores available in the market place", async function() {
+      // Add one more store for a different store owner than the earlier owners e.g.
+      let storeCreated = await myContract.createStoreFront("Store Acct4-1", "1st store of 5th account!", {from:accounts[4]});
+      assert.include(storeCreated.receipt.status, "0x1", "Store should have been created by the store owner!");
+
+      let stores = await myContract.getStores("");
+      assert.isAtLeast(stores.length, 4, "By now at least 4-stores should be in the market place.");
+      assert.notInclude(stores[3], "0x000000000", "The address of the stores doesn't seem to be correct.");
+
+      currentStore = Store.at(stores[3]);
+    });
+
+
+    it("For a given store id, the shopper shall be able to see the corresponding store details!", async function(){
+        let storeDetails = await currentStore.getStoreDetails();
+        assert.include(storeDetails[1], "Acct4", "This store is expected to be associated with account[4]!");
+    });
+
+    it("The shoppers shall be able to see all the products of a given store", async function() {
+      let productReceipt = await currentStore.addProductToTheStore(
+                              "iPhone X",
+                              "Latest version of iPhone",
+                              500000000000000000,
+                              300,
+                              {from:accounts[4]});
+
+      productReceipt = await currentStore.addProductToTheStore(
+                              "iPhone 6 Plus",
+                              "The previous best version of iPhone",
+                              50000000000000000,
+                              300,
+                              {from:accounts[4]});
+
+      // By now we should have 3-products in the market Place
+      let productIds = await currentStore.getProducts();
+
+      assert.isAtLeast(productIds.length, 2, "At this stage, there must be at least two products associated with this store!");
+
+      currentProductId = productIds[0].toNumber();
+    });
+
+    it("The shopper shall be able to see the product details of a given product", async function(){
+        let productDetais = await currentStore.getProductDetails(currentProductId);
+        assert.include(productDetais[0], "iPhone X", "The first product should be iPhone X");
+    });
+
+    it("The shopper shall be able to buy a certain quantity of the product!", async function() {
+        currentStore.PurchaseOfProduct({}, {fromBlock: 0, toBlock: 'latest' }).watch ( (err, response) => {
+          if (err != null && !err.empty()){
+            console.log(err);
+          } else {
+            console.log(response);
+          }
+        });
+
+        let productDetails = await currentStore.getProductDetails(currentProductId);
+
+        await currentStore.buyProductFromStore(currentProductId, 20, {from:accounts[7], gas: 2200000, value: 20 * productDetails[2]});
+
+        let updatedProductDetails = await currentStore.getProductDetails(currentProductId);
+        console.log(currentStore.address);
+
+        assert.isAtMost(updatedProductDetails[3].toNumber(), productDetails[3]-5, "After the successful purchase, the quantity of the product shall reduce by 5.");
+    });
+
+
+    it("The Owner of the store shall be able to withdraw fund from the store!", async function() {
+      let currentBalance = await currentStore.getBalanceOfStore();
+      await currentStore.withdrawFund( 50000000000000000, {from:accounts[4]});
+      let updatedBalance = await currentStore.getBalanceOfStore();
+
+      assert.equal(currentBalance - 50000000000000000, updatedBalance, "The updated balance is not correct!");
+    });
+
+  });
 
 });

@@ -14,4 +14,6 @@ app.createStoreOwner(web3.eth.accounts[3], {from:web3.eth.accounts[1]});
 
 app.createStoreFront("Store Acct3-1", "1st store of 4th account!", {from:web3.eth.accounts[3]});
 
+web3.eth.sendTransaction({from:web3.eth.accounts[7], to:web3.eth.accounts[4], value: web3.toWei("5", "ether")})
+
 */

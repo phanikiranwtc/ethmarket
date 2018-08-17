@@ -43,21 +43,32 @@ contract Store {
       uint quantity
       );
 
+    event PurchaseOfProduct(
+        uint productId,
+        uint quantity,
+        address storeAddress,
+        address storeOwner,
+        address buyerAddress,
+        uint senderBalance,
+        uint weiToTransfer
+      );
+
     event LogAsEvent(address param1, address param2, string param3);
 
     constructor(
             string _storeName,
             string _description,
-            uint _storeId ) public {
+            uint _storeId,
+            address storeOwner ) public payable {
 
-        owner = tx.origin;
+        owner = storeOwner;
         storeName = _storeName;
         storeId = _storeId;
         description = _description;
         nextProductId = 0;
-
-        // emit LogAsEvent(msg.sender, owner, "Constructor");
     }
+
+    function() public payable { }
 
     /**
      * Only (store) owners shall be allowed to add or update the store specific details - e.g. product.
@@ -66,6 +77,13 @@ contract Store {
     modifier onlyOwner {
         require( (owner == msg.sender), "Only a store owner can invoke this function!");
         _;
+    }
+
+    /**
+    * A function to return the state details for a given store contract
+    */
+    function getStoreDetails() public view returns( address, string, uint, string ) {
+      return (owner, storeName, storeId, description);
     }
 
      /**
@@ -97,14 +115,6 @@ contract Store {
               price,
               quantity
               );
-
-              /*
-              emit LogAsEvent(
-                  msg.sender,
-                  owner,
-                  "Manually check if they are same or not!"
-              );
-              */
 
             return nextProductId++;
     }
@@ -194,27 +204,46 @@ contract Store {
 
     /**
      * The shopper can buy this product using this function.
-     *
+     *   // owner.transfer( weiToTransfer );
+       // address(this).transfer( msg.value );
+       // owner.transfer( msg.value );
     */
-    function buyProductFromStore(uint _productId, uint _quantity) public payable {
+    function buyProductFromStore(uint _productId, uint _quantity) public payable returns (bool){
+        uint256 weiToTransfer = _quantity * products[_productId].price;
 
         require( products[_productId].status == ProductStatus.ACTIVE, "Only the active product can be bought!");
         require( owner != msg.sender, "The owner cannot buy its own product!");
         require( _quantity <= products[_productId].quantity, "The store does not have sufficient quantity of the product");
+        require( msg.value <= msg.sender.balance, "The buyer does not have sufficient balance in his / her account!");
+        require( msg.value == weiToTransfer, "The supplied value is lesser than the actual price of the items!");
 
         //Reduce the corresponding quantity from the inventory
         products[_productId].quantity = products[_productId].quantity - _quantity;
 
+        emit PurchaseOfProduct(_productId, _quantity, address(this), owner, msg.sender, msg.sender.balance, weiToTransfer);
+
         // Transfer fund from the shopper's acount into the store's account
-        address(this).transfer( _quantity * products[_productId].price );
+        address myAddress = address(this);
+        myAddress.transfer( msg.value );
+
+        return true;
     }
 
     /**
      * A store owner can withdraw fund from a given store
     */
-    function withdrawFund(uint withdrawAmount) public payable onlyOwner returns(uint) {
+    function withdrawFund(uint withdrawAmount) public payable onlyOwner returns(bool) {
         require(address(this).balance >= withdrawAmount, "The current store balance amount must be greater than the withdrawal amount!");
         owner.transfer(withdrawAmount);
+
+        return true;
+    }
+
+    /**
+    * Return the balance owned by this store
+    */
+    function getBalanceOfStore() constant public returns(uint){
+        return address(this).balance;
     }
 
 }

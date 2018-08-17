@@ -37,6 +37,8 @@ contract MarketPlace {
       address storeAddress
     );
 
+    event AccessingStore(Store currentStore);
+
     /**
      * Only SuperAdmin shall be able to create an Admin user
     */
@@ -121,7 +123,7 @@ contract MarketPlace {
           storeFrontMap[msg.sender].length = storeCount + 1;
         }
 
-        storeFrontMap[msg.sender][storeCount] = address(new Store( storeName, storeDescription, nextStoreId ));
+        storeFrontMap[msg.sender][storeCount] = address(new Store( storeName, storeDescription, nextStoreId, msg.sender ));
         nextStoreId++;
 
         emit NewStore(
@@ -138,7 +140,36 @@ contract MarketPlace {
      *
      */
     function getStores(address storeOwnerAddress) public view returns(address[]) {
-        return storeFrontMap[storeOwnerAddress];
+        if ( storeOwnerAddress != 0 ) {
+            return storeFrontMap[storeOwnerAddress];
+        }
+        else {
+            //
+            // The caller is looking for all the stores in the market place
+            //
+            uint totalStoreCount = 0;
+            uint storeOwnersCount;
+
+            for (storeOwnersCount = 0; storeOwnersCount < storeOwners.length; storeOwnersCount++) {
+                totalStoreCount += storeFrontMap[storeOwners[storeOwnersCount]].length;
+            }
+
+            address[] memory allStores = new address[](totalStoreCount);
+            uint tempStoreCount = 0;
+
+            for ( storeOwnersCount = 0; storeOwnersCount < storeOwners.length; storeOwnersCount++ ) {
+                address[] memory storesOfOwner = storeFrontMap[storeOwners[storeOwnersCount]];
+
+                for ( uint storeFrontCountOfOwner = 0;
+                      storeFrontCountOfOwner < storesOfOwner.length;
+                      storeFrontCountOfOwner++) {
+                  allStores[tempStoreCount] = storesOfOwner[storeFrontCountOfOwner];
+                  tempStoreCount++;
+                }
+            }
+
+            return allStores;
+        }
     }
 
 
