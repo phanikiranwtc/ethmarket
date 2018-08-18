@@ -79,14 +79,14 @@ contract MarketPlace {
     /**
     * This function verifies if an address has an admin access or not.
     */
-    function checkAdmingAccess(address addressToVerify) view public returns(bool) {
-      for (uint index = 0; index <adminUsers.length; index++) {
-        if (adminUsers[index] == addressToVerify) {
-          return true;
-        }
-      }
+    function checkAccess(address addressToVerify) view public returns(bool, bool) {
+      bool isAdmin = false;
+      bool isStoreOwner = false;
 
-      return false;
+      isAdmin = Utils.existInTheArray(adminUsers, addressToVerify);
+      isStoreOwner = Utils.existInTheArray(storeOwners, addressToVerify);
+
+      return (isAdmin, isStoreOwner);
     }
 
     /**
