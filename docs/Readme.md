@@ -47,3 +47,6 @@ module.exports = {
   }
 };
 ```
+# Using IPFS
+## Getting Started
+Follow the document on the below URL: https://ipfs.io/docs/getting-started/
