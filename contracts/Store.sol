@@ -18,6 +18,7 @@ contract Store {
     string public storeName;
     string public description;
     uint private storeId;
+    uint private productCount;
     uint private nextProductId;
     Product[] public products;
 
@@ -59,15 +60,19 @@ contract Store {
             string _storeName,
             string _description,
             uint _storeId,
-            address storeOwner ) public payable {
+            address storeOwner ) public {
 
         owner = storeOwner;
         storeName = _storeName;
         storeId = _storeId;
         description = _description;
-        nextProductId = 0;
+        productCount = 0;
+        nextProductId = 1;
     }
 
+    /**
+    * Since this contract needs to accept ether, declare an anonymous payable function.
+    */
     function() public payable { }
 
     /**
@@ -100,7 +105,7 @@ contract Store {
             uint quantity ) public onlyOwner returns(uint) {
 
             products.length += 1;
-            products[nextProductId] = Product(
+            products[productCount] = Product(
                 nextProductId,
                 productName,
                 productDesc,
@@ -115,6 +120,8 @@ contract Store {
               price,
               quantity
               );
+
+            productCount++;
 
             return nextProductId++;
     }
@@ -135,13 +142,13 @@ contract Store {
             string productDesc,
             uint price,
             uint quantity ) public onlyOwner returns(bool) {
+        uint productIndex = productId - 1;
+        require( products[productIndex].productId != 0 , "Product for the given store id and product id combination does not exist!");
 
-        require( products[productId].productId != 0 , "Product for the given store id and product id combination does not exist!");
-
-        products[productId].productName = productName;
-        products[productId].description = productDesc;
-        products[productId].price = price;
-        products[productId].quantity = quantity;
+        products[productIndex].productName = productName;
+        products[productIndex].description = productDesc;
+        products[productIndex].price = price;
+        products[productIndex].quantity = quantity;
 
         return true;
     }
@@ -151,55 +158,82 @@ contract Store {
      * A removed product will not be visible to shoppers!
      *
     */
-    function removeProduct(uint productId, uint quantity) public onlyOwner {
+    function removeProduct(uint _productId ) public onlyOwner returns(bool){
+        uint productIndex = _productId - 1;
 
-        require( products[productId].status == ProductStatus.ACTIVE, "Only the active product can be marked as removed!");
+        require( products[productIndex].status == ProductStatus.ACTIVE, "Only the active product can be be removed from the store!");
+        products[productIndex].status = ProductStatus.REMOVED;
 
-        products[productId].quantity = products[productId].quantity - quantity;
-        products[productId].status = ProductStatus.REMOVED;
+        return true;
+    }
+
+    /**
+     * A store owner can decide to remove a product from his/her store.
+     * A removed product will not be visible to shoppers!
+     *
+    */
+    function reActivateProduct(uint _productId ) public onlyOwner returns(bool){
+        uint productIndex = _productId - 1;
+
+        require( products[productIndex].status == ProductStatus.REMOVED, "Only the Inactive product can be activated!");
+        products[productIndex].status = ProductStatus.ACTIVE;
+
+        return true;
     }
 
     /**
     * getProducts will return all the products of this store.
     */
-    function getProducts() public view returns( uint[] ) {
+    function getProducts( bool activeOnlyFlag ) public view returns( uint[] ) {
 
-      uint8 activeProdCount = 0;
+      uint numOfProducts = 0;
 
-      for (uint8 prodCount=0; prodCount<products.length; prodCount++) {
-          if (products[prodCount].status == ProductStatus.ACTIVE) {
-              activeProdCount++;
-          }
+      if ( activeOnlyFlag == true) {
+        for (uint8 prodCount=0; prodCount<products.length; prodCount++) {
+            if (products[prodCount].status == ProductStatus.ACTIVE) {
+                numOfProducts++;
+            }
+        }
+      } else {
+        numOfProducts = products.length;
       }
 
-      uint[] memory activeProductIds = new uint[](activeProdCount);
 
-      if (activeProdCount > 0) {
+      uint[] memory productIds = new uint[](numOfProducts);
+
+      if ( numOfProducts > 0 ) {
 
         uint8 tmpCount = 0;
 
         for (prodCount=0; prodCount<products.length; prodCount++) {
-            if (products[prodCount].status == ProductStatus.ACTIVE) {
-              activeProductIds[tmpCount] = products[prodCount].productId;
+            if ( activeOnlyFlag == true ) {
+              if (products[prodCount].status == ProductStatus.ACTIVE) {
+                productIds[tmpCount] = products[prodCount].productId;
+                tmpCount++;
+              }
+            } else {
+              productIds[tmpCount] = products[prodCount].productId;
               tmpCount++;
             }
+
         }
       }
 
-
-      return activeProductIds;
+      return productIds;
     }
+
 
     /*
     * For a given product identifier of the store, this method will return the product details.
     */
-    function getProductDetails(uint productId) public view returns(string, string, uint, uint, ProductStatus) {
+    function getProductDetails(uint _productId) public view returns(string, string, uint, uint, ProductStatus) {
+        uint productIndex = _productId - 1;
 
-        return ( products[productId].productName,
-                 products[productId].description,
-                 products[productId].price,
-                 products[productId].quantity,
-                 products[productId].status );
+        return ( products[productIndex].productName,
+                 products[productIndex].description,
+                 products[productIndex].price,
+                 products[productIndex].quantity,
+                 products[productIndex].status );
     }
 
     /**
@@ -209,16 +243,17 @@ contract Store {
        // owner.transfer( msg.value );
     */
     function buyProductFromStore(uint _productId, uint _quantity) public payable returns (bool){
-        uint256 weiToTransfer = _quantity * products[_productId].price;
+        uint productIndex = _productId - 1;
+        uint256 weiToTransfer = _quantity * products[productIndex].price;
 
-        require( products[_productId].status == ProductStatus.ACTIVE, "Only the active product can be bought!");
+        require( products[productIndex].status == ProductStatus.ACTIVE, "Only the active product can be bought!");
         require( owner != msg.sender, "The owner cannot buy its own product!");
-        require( _quantity <= products[_productId].quantity, "The store does not have sufficient quantity of the product");
+        require( _quantity <= products[productIndex].quantity, "The store does not have sufficient quantity of the product");
         require( msg.value <= msg.sender.balance, "The buyer does not have sufficient balance in his / her account!");
         require( msg.value == weiToTransfer, "The supplied value is lesser than the actual price of the items!");
 
         //Reduce the corresponding quantity from the inventory
-        products[_productId].quantity = products[_productId].quantity - _quantity;
+        products[productIndex].quantity = products[productIndex].quantity - _quantity;
 
         emit PurchaseOfProduct(_productId, _quantity, address(this), owner, msg.sender, msg.sender.balance, weiToTransfer);
 

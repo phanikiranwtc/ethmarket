@@ -6,6 +6,7 @@ contract('MarketPlace', function(accounts){
   let errTypes = require("./exceptions.js").errTypes;
   let myContract;
   let currentStore;
+  let currentProductId = -1;
 
   MarketPlace.deployed().then(function(instance) {
     myContract = instance;
@@ -84,7 +85,7 @@ contract('MarketPlace', function(accounts){
       assert.equal(productReceipt.receipt.status, "0x1", "The success code must be 1!");
     });
 
-    it("For a given store owner, you shall be able to retrieve all of thheir products!", async function(){
+    it("For a given store owner, you shall be able to retrieve all of their products!", async function(){
       let stores = await myContract.getStores(accounts[3]);
 
       // Create products for the first accounts
@@ -97,7 +98,7 @@ contract('MarketPlace', function(accounts){
                               3000,
                               {from:accounts[3]});
 
-      let products = await currentStore.getProducts();
+      let products = await currentStore.getProducts(false);
       productIdForDetails = products[0].toNumber();
       assert.isAtLeast(products.length, 2, "By this time, this product must have at least two products!");
     });
@@ -110,8 +111,6 @@ contract('MarketPlace', function(accounts){
   });
 
   describe("4. Test Report for the Shoppers!", function(){
-
-    let currentProductId = -1;
 
     it("A shopper shall be able to access all the stores available in the market place", async function() {
       // Add one more store for a different store owner than the earlier owners e.g.
@@ -147,7 +146,7 @@ contract('MarketPlace', function(accounts){
                               {from:accounts[4]});
 
       // By now we should have 3-products in the market Place
-      let productIds = await currentStore.getProducts();
+      let productIds = await currentStore.getProducts(false);
 
       assert.isAtLeast(productIds.length, 2, "At this stage, there must be at least two products associated with this store!");
 
@@ -160,6 +159,7 @@ contract('MarketPlace', function(accounts){
     });
 
     it("The shopper shall be able to buy a certain quantity of the product!", async function() {
+      /*
         currentStore.PurchaseOfProduct({}, {fromBlock: 0, toBlock: 'latest' }).watch ( (err, response) => {
           if (err != null && !err.empty()){
             console.log(err);
@@ -167,13 +167,11 @@ contract('MarketPlace', function(accounts){
             console.log(response);
           }
         });
-
+        */
+        
         let productDetails = await currentStore.getProductDetails(currentProductId);
-
-        await currentStore.buyProductFromStore(currentProductId, 20, {from:accounts[7], gas: 2200000, value: 20 * productDetails[2]});
-
+        await currentStore.buyProductFromStore(currentProductId, 10, {from:accounts[7], gas: 2200000, value: 10 * productDetails[2]});
         let updatedProductDetails = await currentStore.getProductDetails(currentProductId);
-        console.log(currentStore.address);
 
         assert.isAtMost(updatedProductDetails[3].toNumber(), productDetails[3]-5, "After the successful purchase, the quantity of the product shall reduce by 5.");
     });
@@ -181,6 +179,8 @@ contract('MarketPlace', function(accounts){
 
     it("The Owner of the store shall be able to withdraw fund from the store!", async function() {
       let currentBalance = await currentStore.getBalanceOfStore();
+      // console.log(currentBalance.toNumber());
+
       await currentStore.withdrawFund( 50000000000000000, {from:accounts[4]});
       let updatedBalance = await currentStore.getBalanceOfStore();
 
@@ -188,5 +188,34 @@ contract('MarketPlace', function(accounts){
     });
 
   });
+
+  describe("5. Test Report for Managing the store by the store owner!", function() {
+    it("The store owner shall be able to update the details of the product", async function() {
+      let productDetails = await currentStore.getProductDetails(currentProductId);
+      await currentStore.updateProduct(
+            currentProductId,
+            productDetails[0],
+            productDetails[1],
+            75000000000000000,
+            600,
+            {from:accounts[4], gas: 2200000});
+
+      productDetails = await currentStore.getProductDetails(currentProductId);
+      assert.equal(productDetails[3].toNumber(), 600, "The quantity of the updated product details is wrong.");
+    });
+
+    it("The store owner shall be able to remove a product from a given store!", async function(){
+      await currentStore.removeProduct(currentProductId, {from:accounts[4], gas: 2200000});
+      let productDetails = await currentStore.getProductDetails(currentProductId);
+      assert.equal(productDetails[4].toNumber(), 1, "The product must have been in REMOVED status!");
+    });
+
+    it("The store owner shall be able to reactivate a removed product of a given store!", async function(){
+      await currentStore.reActivateProduct(currentProductId, {from:accounts[4], gas: 2200000});
+      let productDetails = await currentStore.getProductDetails(currentProductId);
+      assert.equal(productDetails[4].toNumber(), 0, "The product must have been in ACTIVE status!");
+    });
+
+  })
 
 });
