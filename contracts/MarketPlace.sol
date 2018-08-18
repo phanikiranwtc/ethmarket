@@ -77,16 +77,21 @@ contract MarketPlace {
     }
 
     /**
-    * This function verifies if an address has an admin access or not.
+    * This function verifies if an address has the following accesses or not
+    * - Super Admin
+    * - Admins
+    * - Store Owner
     */
-    function checkAccess(address addressToVerify) view public returns(bool, bool) {
-      bool isAdmin = false;
-      bool isStoreOwner = false;
+    function checkAccess(address addressToVerify) view public returns(bool, bool, bool) {
+      bool isAdmin = Utils.existInTheArray(adminUsers, addressToVerify);
+      bool isStoreOwner = Utils.existInTheArray(storeOwners, addressToVerify);
+      bool isSuperAdmin = false;
 
-      isAdmin = Utils.existInTheArray(adminUsers, addressToVerify);
-      isStoreOwner = Utils.existInTheArray(storeOwners, addressToVerify);
+      if ( addressToVerify == superAdmin ) {
+        isSuperAdmin = true;
+      }
 
-      return (isAdmin, isStoreOwner);
+      return (isSuperAdmin, isAdmin, isStoreOwner);
     }
 
     /**

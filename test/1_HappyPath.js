@@ -21,13 +21,13 @@ contract('MarketPlace', function(accounts){
 
       it("The first account shall be added as an Admin by default!", async function(){
         let accessFlags = await myContract.checkAccess(accounts[0]);
-        assert(accessFlags[0], "The first account of the network must have been an Admin by default!");
+        assert(accessFlags[1], "The first account of the network must have been an Admin by default!");
       });
 
       it("The Super Admin, i.e. the first account, shall be able to add one or more admin user!", async function(){
             await myContract.createAdminUser(accounts[1], {from:accounts[0]});
             let accessFlags = await myContract.checkAccess(accounts[1]);
-            assert(accessFlags[0], "The createAdminUser invocation did not succeed!");
+            assert(accessFlags[1], "The createAdminUser invocation did not succeed!");
         });
 
       it("An admin shall be able to create one or more store owners!", async function(){
