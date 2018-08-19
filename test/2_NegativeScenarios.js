@@ -11,15 +11,20 @@ contract('MarketPlace', async function(accounts){
             myContract = await artifacts.require("../contracts/MarketPlace.sol").new();
         });
 
-        it("The second account must not be added in the Admin group at the time of contract deployment.", function() {
-            assert(myContract.checkAdmingAccess(accounts[1]), "The second account of the has been added to the Admin group by default!");
+        it("The second account must not be added in the Admin group at the time of contract deployment.", async function() {
+            let accessFlag = myContract.checkAccess(accounts[1]);
+            assert(!accessFlag[0], "The second account must not be a super Admin!");
+            assert(!accessFlag[1], "By default the second account must not be an Admin!");
         });
 
         it("An admin, who is not a super admin, shall not be able to create another admin.", async function() {
             await myContract.createAdminUser(accounts[1], {from:accounts[0]});
-            assert(myContract.checkAdmingAccess(accounts[1]), "The second account on the network must have been added into the Admin group!");
+            let accessFlag = await myContract.checkAccess(accounts[1]);
+            assert(accessFlag[1], "The second account on the network must have been added into the Admin group!");
 
             await tryCatch(myContract.createAdminUser(accounts[3], {from:accounts[1]}), errTypes.revert);
+            accessFlag = myContract.checkAccess(accounts[1]);
+            assert(!accessFlag[1], "The fourth account on the network should not have been added into the Admin group!");
         });
 
         it("A non-admin address shall not be allowed to create a store owner", async function() {

@@ -77,6 +77,13 @@ contract MarketPlace {
     }
 
     /**
+    * This function shall return all the admin address in the market place
+    */
+    function getAdminUsers() public view returns(address[]) {
+      return adminUsers;
+    }
+
+    /**
     * This function verifies if an address has the following accesses or not
     * - Super Admin
     * - Admins

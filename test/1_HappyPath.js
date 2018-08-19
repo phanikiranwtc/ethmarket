@@ -39,6 +39,10 @@ contract('MarketPlace', function(accounts){
         assert.include(storeOwnerCreated.receipt.status, "0x1", "Store owner should have been created by the Admin user!");
       });
 
+      it("The store owner who is not admin, shall have only the store owner access!", async function() {
+
+      });
+
   });
 
   describe("2. Test Report for the Store Side of the Contract", function(){
@@ -175,7 +179,6 @@ contract('MarketPlace', function(accounts){
 
     it("The Owner of the store shall be able to withdraw fund from the store!", async function() {
       let currentBalance = await currentStore.getBalanceOfStore();
-      // console.log(currentBalance.toNumber());
 
       await currentStore.withdrawFund( 50000000000000000, {from:accounts[4]});
       let updatedBalance = await currentStore.getBalanceOfStore();
@@ -188,13 +191,14 @@ contract('MarketPlace', function(accounts){
   describe("5. Test Report for Managing the store by the store owner!", function() {
     it("The store owner shall be able to update the details of the product", async function() {
       let productDetails = await currentStore.getProductDetails(currentProductId);
+
       await currentStore.updateProduct(
             currentProductId,
             productDetails[0],
             productDetails[1],
             75000000000000000,
             600,
-            {from:accounts[4], gas: 2200000});
+            { from:accounts[4], gas: 2200000 });
 
       productDetails = await currentStore.getProductDetails(currentProductId);
       assert.equal(productDetails[3].toNumber(), 600, "The quantity of the updated product details is wrong.");
@@ -213,5 +217,19 @@ contract('MarketPlace', function(accounts){
     });
 
   })
+
+  describe("6. The remaining test cases of the market place!", function(){
+
+    it("The super store owner account need not be an Admin or Super Admin!", async function(){
+      let accessFlags = await myContract.checkAccess(accounts[4]);
+      assert(!accessFlags[1], "This store owner should not have an admin access!");
+    });
+
+    it("We shall be able to retrieve all the admins in the network!", async function(){
+      let adminUsers = await myContract.getAdminUsers();
+      assert.equal(adminUsers.length, 2, "This store owner should not have an admin access!");
+    });
+
+  });
 
 });
