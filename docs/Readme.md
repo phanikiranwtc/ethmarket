@@ -50,3 +50,18 @@ module.exports = {
 # Using IPFS
 ## Getting Started
 Follow the document on the below URL: https://ipfs.io/docs/getting-started/
+
+# Angular Project
+## Create a new project
+In the marketplace directory, run the following command:
+```
+$ng new webapp
+```
+
+Install Angular dependencies:
+```
+npm install --save @angular/material @angular/cdk @angular/animations
+npm install @angular/flex-layout --save
+```
+
+
