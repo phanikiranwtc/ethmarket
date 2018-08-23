@@ -134,14 +134,14 @@ contract('MarketPlace', function(accounts){
       let productReceipt = await currentStore.addProductToTheStore(
                               "iPhone X",
                               "Latest version of iPhone",
-                              500000000000000000,
+                              500000000000000,
                               300,
                               {from:accounts[4]});
 
       productReceipt = await currentStore.addProductToTheStore(
                               "iPhone 6 Plus",
                               "The previous best version of iPhone",
-                              50000000000000000,
+                              500000000000000,
                               300,
                               {from:accounts[4]});
 
@@ -179,11 +179,18 @@ contract('MarketPlace', function(accounts){
 
     it("The Owner of the store shall be able to withdraw fund from the store!", async function() {
       let currentBalance = await currentStore.getBalanceOfStore();
+      await currentStore.withdrawFund( 500000000000000, {from:accounts[4]});
 
-      await currentStore.withdrawFund( 50000000000000000, {from:accounts[4]});
       let updatedBalance = await currentStore.getBalanceOfStore();
+      assert.equal(currentBalance - 500000000000000, updatedBalance, "The updated balance is not correct!");
+    });
 
-      assert.equal(currentBalance - 50000000000000000, updatedBalance, "The updated balance is not correct!");
+    it("The Owner of the store shall not be able to withdraw zero amount from the store!", async function() {
+
+      await tryCatch(currentStore.withdrawFund(
+            0,
+            {from:accounts[4]}),
+          errTypes.revert);
     });
 
   });
@@ -196,7 +203,7 @@ contract('MarketPlace', function(accounts){
             currentProductId,
             productDetails[0],
             productDetails[1],
-            75000000000000000,
+            500000000000000,
             600,
             { from:accounts[4], gas: 2200000 });
 

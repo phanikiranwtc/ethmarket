@@ -10,17 +10,19 @@ pragma solidity ^0.4.22;
  * - store owner being able to see the stores
  * - customer being able to view the products in a given Store
  *
+ * BP2: Restricting Access:
+ *  - Restrict other contracts’ access to the state by making all the state variables private.
 */
 contract Store {
     // Onwer is the actual store owner who is creating the store.
     address private owner;
 
-    string public storeName;
-    string public description;
+    string private storeName;
+    string private description;
     uint private storeId;
     uint private productCount;
     uint private nextProductId;
-    Product[] public products;
+    Product[] private products;
 
     enum ProductStatus {
         ACTIVE,
@@ -96,6 +98,9 @@ contract Store {
      *
      * Whenever a new product is added, the product map will be updated to hold all the product and their details
      * across all the store and store owners.
+     *
+     * TODO: Add expiry feature and use the Auto Deprecation pattern to expire a product. Also, implement the use case
+     *      that will prevent the shoppers from buying an expired product!
      *
     */
     function addProductToTheStore(
@@ -266,8 +271,12 @@ contract Store {
 
     /**
      * A store owner can withdraw fund from a given store
+     *
+     * BP1: Fail early and fail loud
+     *  - Fail early and fail loud pattern has been used to ensure that zero amount withdrwal doesn't take place.
     */
     function withdrawFund(uint withdrawAmount) public payable onlyOwner returns(bool) {
+        require(withdrawAmount > 0, "The withdrwal amount must be a positive number!");
         require(address(this).balance >= withdrawAmount, "The current store balance amount must be greater than the withdrawal amount!");
         owner.transfer(withdrawAmount);
 
