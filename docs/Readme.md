@@ -47,6 +47,14 @@ module.exports = {
   }
 };
 ```
+## Unit Testing
+1. Go to the contract folder
+
+Run the following command:
+```
+truffle test --network ganache ./test/1_HappyPath.js 
+```
+
 # Using IPFS
 ## Getting Started
 Follow the document on the below URL: https://ipfs.io/docs/getting-started/
