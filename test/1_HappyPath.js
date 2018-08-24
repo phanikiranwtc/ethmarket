@@ -33,10 +33,11 @@ contract('MarketPlace', function(accounts){
       it("An admin shall be able to create one or more store owners!", async function(){
         // Above we already added 2nd account in the Admin group. So, let's create a store owner using that.
         let storeOwnerCreated = await myContract.createStoreOwner(accounts[3], {from:accounts[1]});
-        assert.include(storeOwnerCreated.receipt.status, "0x1", "Store owner should have been created by the Admin user!");
+        // console.log(storeOwnerCreated);
+        assert.include(storeOwnerCreated.receipt.status, "1", "Store owner should have been created by the Admin user!");
 
         storeOwnerCreated = await myContract.createStoreOwner(accounts[4], {from:accounts[1]});
-        assert.include(storeOwnerCreated.receipt.status, "0x1", "Store owner should have been created by the Admin user!");
+        assert.include(storeOwnerCreated.receipt.status, "1", "Store owner should have been created by the Admin user!");
       });
 
       it("The store owner who is not admin, shall have only the store owner access!", async function() {
@@ -49,10 +50,10 @@ contract('MarketPlace', function(accounts){
 
     it("A store owner shall be able to create one or more stores!", async function(){
         let storeCreated = await myContract.createStoreFront("Store Acct3-1", "1st store of 4th account!", {from:accounts[3]});
-        assert.include(storeCreated.receipt.status, "0x1", "Store should have been created by the store owner!");
+        assert.include(storeCreated.receipt.status, "1", "Store should have been created by the store owner!");
 
         storeCreated = await myContract.createStoreFront("Store Acct3-2", "2nd store of 4th account!", {from:accounts[3]});
-        assert.include(storeCreated.receipt.status, "0x1", "Store should have been created by the store owner!");
+        assert.include(storeCreated.receipt.status, "1", "Store should have been created by the store owner!");
     });
 
     it("After successful creation of a store, a new store event shall be fired!", async function(){
@@ -82,7 +83,7 @@ contract('MarketPlace', function(accounts){
                               3000,
                               {from:accounts[3]});
 
-      assert.equal(productReceipt.receipt.status, "0x1", "The success code must be 1!");
+      assert.include(productReceipt.receipt.status, "1", "The success code must be 1!");
     });
 
     it("For a given store owner, you shall be able to retrieve all of their products!", async function(){
@@ -115,7 +116,7 @@ contract('MarketPlace', function(accounts){
     it("A shopper shall be able to access all the stores available in the market place", async function() {
       // Add one more store for a different store owner than the earlier owners e.g.
       let storeCreated = await myContract.createStoreFront("Store Acct4-1", "1st store of 5th account!", {from:accounts[4]});
-      assert.include(storeCreated.receipt.status, "0x1", "Store should have been created by the store owner!");
+      assert.include(storeCreated.receipt.status, "1", "Store should have been created by the store owner!");
 
       let stores = await myContract.getStores("");
       assert.isAtLeast(stores.length, 4, "By now at least 4-stores should be in the market place.");
@@ -180,7 +181,7 @@ contract('MarketPlace', function(accounts){
       let productDetails = await currentStore.getProductDetails(currentProductId);
       await currentStore.buyProductFromStore(currentProductId, 20, {from:accounts[7], gas: 2200000, value: 20 * productDetails[2]});
       let tokenBalance = await myContract.getTokenBalance(accounts[7]);
-      
+
       assert.isAtLeast(tokenBalance.toNumber(), 0, "The number of tokens must have been greater than zero");
     });
 
