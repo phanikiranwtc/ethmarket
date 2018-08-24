@@ -180,9 +180,7 @@ contract('MarketPlace', function(accounts){
       let productDetails = await currentStore.getProductDetails(currentProductId);
       await currentStore.buyProductFromStore(currentProductId, 20, {from:accounts[7], gas: 2200000, value: 20 * productDetails[2]});
       let tokenBalance = await myContract.getTokenBalance(accounts[7]);
-
-      console.log(tokenBalance);
-
+      
       assert.isAtLeast(tokenBalance.toNumber(), 0, "The number of tokens must have been greater than zero");
     });
 
