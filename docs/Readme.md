@@ -47,6 +47,29 @@ module.exports = {
   }
 };
 ```
+
+Use the following command to deploy / redeploy the contract in the test environment:
+```
+truffle migrate --reset --compile-all --network ganache
+```
+
+## Unit Testing
+1. Go to the contract folder
+
+### Setting up Mocha
+Run the following command to see the eth gas report
+```
+npm install --save-dev eth-gas-reporter
+```
+
+Refer to the truffle.js file for specific configuration.
+
+### Testing
+Run the following command:
+```
+truffle test --network ganache ./test/1_HappyPath.js 
+```
+
 # Using IPFS
 ## Getting Started
 Follow the document on the below URL: https://ipfs.io/docs/getting-started/
