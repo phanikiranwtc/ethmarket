@@ -56,6 +56,15 @@ truffle migrate --reset --compile-all --network ganache
 ## Unit Testing
 1. Go to the contract folder
 
+### Setting up Mocha
+Run the following command to see the eth gas report
+```
+npm install --save-dev eth-gas-reporter
+```
+
+Refer to the truffle.js file for specific configuration.
+
+### Testing
 Run the following command:
 ```
 truffle test --network ganache ./test/1_HappyPath.js 
