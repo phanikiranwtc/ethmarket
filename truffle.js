@@ -23,14 +23,24 @@ module.exports = {
       host:'127.0.0.1',
       port: 7545,
       network_id: "5777"
-      // , gas : 4700000
-      // , gasPrice : 10000000000
+      , gas : 8000000
+      , gasPrice : 10000000000
+      , from: "0xF928ac0Ed0D0E91F51287A5F28dbdB1019fBbA55"
     },
     rinkeby: {
       host: "localhost",
       port: 8545,
       network_id:4,
       gas : 4700000
+    }
+  },
+  mocha:{
+    // https://www.npmjs.com/package/eth-gas-reporter
+    reporter:'eth-gas-reporter',
+    reporterOptions:{
+      currency:'USD',
+      gasPrice: 21,
+      showTimeSpent:true
     }
   }
 };

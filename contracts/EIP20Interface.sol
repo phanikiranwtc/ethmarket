@@ -5,6 +5,7 @@ pragma solidity ^0.4.22;
 */
 
 contract EIP20Interface {
+
   function totalSupply() public view returns (uint256);
 
   function balanceOf(address _who) public view returns (uint256);

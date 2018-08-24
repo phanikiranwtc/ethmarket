@@ -2,7 +2,7 @@ pragma solidity ^0.4.22;
 
 import "./Store.sol";
 import "./library/Utils.sol";
-
+import "./EIP20.sol";
 /**
  * There are a list of stores on a central marketplace where shoppers can purchase goods posted by the store owners.
  * The central marketplace is managed by a group of administrators. Admins allow store owners to add stores
@@ -16,6 +16,7 @@ contract MarketPlace {
     address[] public adminUsers;
     address[] public storeOwners;
     uint private nextStoreId;
+    EIP20 private eip20Token;
 
     // mapping of stores of a given store owner
     mapping (address => address[]) public storeFrontMap;
@@ -28,6 +29,7 @@ contract MarketPlace {
         superAdmin = msg.sender;
         adminUsers.push(msg.sender);
         nextStoreId = 1;
+        eip20Token = new EIP20();
     }
 
     event NewStore (
@@ -135,7 +137,13 @@ contract MarketPlace {
           storeFrontMap[msg.sender].length = storeCount + 1;
         }
 
-        storeFrontMap[msg.sender][storeCount] = address(new Store( storeName, storeDescription, nextStoreId, msg.sender ));
+        storeFrontMap[msg.sender][storeCount] = address(new Store(
+                                                            storeName,
+                                                            storeDescription,
+                                                            nextStoreId,
+                                                            msg.sender,
+                                                            eip20Token ));
+
         nextStoreId++;
 
         emit NewStore(
@@ -184,6 +192,14 @@ contract MarketPlace {
         }
     }
 
+    /**
+     * @dev This method returns the token balance of a given account.
+     * @param accountAddress is the address whose balance is being queried
+     */
+     function getTokenBalance(address accountAddress) public view returns(uint256 tokenBalance) {
+       return eip20Token.balanceOf(accountAddress);
+     }
+
 
     /**
      * The market place can be destructed by only the super admin, that too when we have at least 75% of the store owners
@@ -204,4 +220,5 @@ contract MarketPlace {
     function getConsentForClosure() private pure returns(bool) {
         return false;
     }
+
 }

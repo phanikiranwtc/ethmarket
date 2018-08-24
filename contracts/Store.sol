@@ -1,5 +1,7 @@
 pragma solidity ^0.4.22;
 
+import "./EIP20.sol";
+
 /**
  * This contract will create all the functionalities related to a store.
  *
@@ -16,13 +18,19 @@ pragma solidity ^0.4.22;
 contract Store {
     // Onwer is the actual store owner who is creating the store.
     address private owner;
-
     string private storeName;
     string private description;
     uint private storeId;
     uint private productCount;
     uint private nextProductId;
     Product[] private products;
+    EIP20 private eip20Token;
+
+    /**
+    * At some stage we can oraclize the token price. However, for now let's consider this
+    * for the sake of any calculation.
+    */
+    uint256 constant private tokenPriceInWei = 10000000000000;
 
     enum ProductStatus {
         ACTIVE,
@@ -36,6 +44,7 @@ contract Store {
         uint price;
         uint quantity;
         ProductStatus status;
+        uint256 discountPercentage;
     }
 
     event NewProduct(
@@ -57,19 +66,28 @@ contract Store {
       );
 
     event LogAsEvent(address param1, address param2, string param3);
-
+    /**
+    * @dev Creates a Store Contract which holds the associated products and the balance corresponding to the
+    *      sales of such products.
+    * @param _storeName - the name of the stores
+    * @param _description - the description about the stores
+    * @param _storeId - the store id of the store, which will be unique across the market place
+    * @param _storeOwner - the actual owner of the store (will be an externally owned accounts)
+    */
     constructor(
             string _storeName,
             string _description,
             uint _storeId,
-            address storeOwner ) public {
+            address _storeOwner,
+            EIP20 _eip20Token ) public {
 
-        owner = storeOwner;
+        owner = _storeOwner;
         storeName = _storeName;
         storeId = _storeId;
         description = _description;
         productCount = 0;
         nextProductId = 1;
+        eip20Token = _eip20Token;
     }
 
     /**
@@ -88,6 +106,11 @@ contract Store {
 
     /**
     * A function to return the state details for a given store contract
+    * @return a list of values with the following details
+    *   - Owner Address
+    *   - Store name
+    *   - Store identifier
+    *   - Store description
     */
     function getStoreDetails() public view returns( address, string, uint, string ) {
       return (owner, storeName, storeId, description);
@@ -109,14 +132,17 @@ contract Store {
             uint price,
             uint quantity ) public onlyOwner returns(uint) {
 
+            uint256 discountPercentage = 10;
             products.length += 1;
+
             products[productCount] = Product(
                 nextProductId,
                 productName,
                 productDesc,
                 price,
                 quantity,
-                ProductStatus.ACTIVE );
+                ProductStatus.ACTIVE,
+                discountPercentage );
 
             emit NewProduct(
               nextProductId,
@@ -139,6 +165,8 @@ contract Store {
      * - productName
      * - price
      * - description
+     *
+     * TODO : Add an additional parameter for discountPercentage
      *
     */
     function updateProduct(
@@ -231,14 +259,15 @@ contract Store {
     /*
     * For a given product identifier of the store, this method will return the product details.
     */
-    function getProductDetails(uint _productId) public view returns(string, string, uint, uint, ProductStatus) {
+    function getProductDetails(uint _productId) public view returns(string, string, uint, uint, ProductStatus, uint256 ) {
         uint productIndex = _productId - 1;
 
         return ( products[productIndex].productName,
                  products[productIndex].description,
                  products[productIndex].price,
                  products[productIndex].quantity,
-                 products[productIndex].status );
+                 products[productIndex].status,
+                 products[productIndex].discountPercentage );
     }
 
     /**
@@ -265,6 +294,13 @@ contract Store {
         // Transfer fund from the shopper's acount into the store's account
         address myAddress = address(this);
         myAddress.transfer( msg.value );
+
+        // Issue loyalty tokens
+        // EIP20 eip20Token = EIP20();
+        eip20Token.issueNewTokens( owner,
+                                   msg.sender,
+                                   (weiToTransfer * products[productIndex].discountPercentage) / (tokenPriceInWei * 100)
+                                );
 
         return true;
     }

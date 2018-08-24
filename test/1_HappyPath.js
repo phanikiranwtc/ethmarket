@@ -176,6 +176,16 @@ contract('MarketPlace', function(accounts){
         assert.isAtMost(updatedProductDetails[3].toNumber(), productDetails[3]-5, "After the successful purchase, the quantity of the product shall reduce by 5.");
     });
 
+    it("The shopper shall be able to earn tokens as per the discount percentage configured for a given product", async function(){
+      let productDetails = await currentStore.getProductDetails(currentProductId);
+      await currentStore.buyProductFromStore(currentProductId, 20, {from:accounts[7], gas: 2200000, value: 20 * productDetails[2]});
+      let tokenBalance = await myContract.getTokenBalance(accounts[7]);
+
+      console.log(tokenBalance);
+
+      assert.isAtLeast(tokenBalance.toNumber(), 0, "The number of tokens must have been greater than zero");
+    });
+
 
     it("The Owner of the store shall be able to withdraw fund from the store!", async function() {
       let currentBalance = await currentStore.getBalanceOfStore();
