@@ -47,6 +47,12 @@ module.exports = {
   }
 };
 ```
+
+Use the following command to deploy / redeploy the contract in the test environment:
+```
+truffle migrate --reset --compile-all --network ganache
+```
+
 ## Unit Testing
 1. Go to the contract folder
 
