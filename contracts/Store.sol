@@ -16,6 +16,8 @@ import "./EIP20.sol";
  *  - Restrict other contracts’ access to the state by making all the state variables private.
 */
 contract Store {
+    using SafeMath for uint256;
+
     // Onwer is the actual store owner who is creating the store.
     address private owner;
     string private storeName;
@@ -284,23 +286,45 @@ contract Store {
         require( owner != msg.sender, "The owner cannot buy its own product!");
         require( _quantity <= products[productIndex].quantity, "The store does not have sufficient quantity of the product");
         require( msg.value <= msg.sender.balance, "The buyer does not have sufficient balance in his / her account!");
-        require( msg.value == weiToTransfer, "The supplied value is lesser than the actual price of the items!");
+        // require( msg.value == weiToTransfer, "The supplied value is lesser than the actual price of the items!");
 
         //Reduce the corresponding quantity from the inventory
         products[productIndex].quantity = products[productIndex].quantity - _quantity;
 
         emit PurchaseOfProduct(_productId, _quantity, address(this), owner, msg.sender, msg.sender.balance, weiToTransfer);
 
-        // Transfer fund from the shopper's acount into the store's account
-        address myAddress = address(this);
-        myAddress.transfer( msg.value );
+        // Redeem tokens by transferring the equivalent amount of tokens to the store owners
+        uint256 discountValue = 0;
 
-        // Issue loyalty tokens
-        // EIP20 eip20Token = EIP20();
-        eip20Token.issueNewTokens( owner,
+        if (eip20Token.balanceOf(msg.sender) > 0) {
+          uint256 tokenValue = eip20Token.balanceOf(msg.sender) * tokenPriceInWei;
+
+          if ( tokenValue <= weiToTransfer ) {
+            // Transfer all the tokens of the shopper to the store owner and
+            // set the discounted value to be same as the token values
+            discountValue = tokenValue;
+            eip20Token.transferFrom( msg.sender, owner, eip20Token.balanceOf(msg.sender) );
+          } else {
+            discountValue = weiToTransfer;
+            eip20Token.transferFrom( msg.sender, owner, weiToTransfer.div(tokenPriceInWei) );
+          }
+        }
+
+        // Transfer fund from the shopper's acount into the store's account
+        uint256 finalAmountToBePaid = weiToTransfer.sub(discountValue);
+        if ( finalAmountToBePaid > 0 ) {
+          address myAddress = address(this);
+          myAddress.transfer( finalAmountToBePaid );
+        }
+
+        // Transfer loyalty tokens to the shoppers
+        if ( products[productIndex].discountPercentage > 0 ) {
+          eip20Token.transferFrom( owner,
                                    msg.sender,
                                    (weiToTransfer * products[productIndex].discountPercentage) / (tokenPriceInWei * 100)
-                                );
+                                 );
+        }
+
 
         return true;
     }

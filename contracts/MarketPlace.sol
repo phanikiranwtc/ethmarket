@@ -3,6 +3,7 @@ pragma solidity ^0.4.22;
 import "./Store.sol";
 import "./library/Utils.sol";
 import "./EIP20.sol";
+import "./library/SafeMath.sol";
 /**
  * There are a list of stores on a central marketplace where shoppers can purchase goods posted by the store owners.
  * The central marketplace is managed by a group of administrators. Admins allow store owners to add stores
@@ -12,6 +13,8 @@ import "./EIP20.sol";
  */
 
 contract MarketPlace {
+    using SafeMath for uint256;
+
     address superAdmin;
     address[] public adminUsers;
     address[] public storeOwners;
@@ -115,6 +118,7 @@ contract MarketPlace {
         return true;
     }
 
+
     /**
     * This function shall return all the store owners address in the market place
     */
@@ -193,13 +197,21 @@ contract MarketPlace {
     }
 
     /**
+     * Any Admin shall be able to allocate certain number of new tokens to a store owner.
+     * Of course, we need to make sure that a given address is indeed a store owner
+    */
+    function allocateNewTokens(address storeOwnerAddress, uint256 numberOfTokens) public onlySuperAdmin returns(uint256){
+        require( Utils.existInTheArray(storeOwners, storeOwnerAddress), "The provided address is not a store owner!");
+        return eip20Token.issueNewTokens(superAdmin, storeOwnerAddress, numberOfTokens);
+    }
+
+    /**
      * @dev This method returns the token balance of a given account.
      * @param accountAddress is the address whose balance is being queried
      */
      function getTokenBalance(address accountAddress) public view returns(uint256 tokenBalance) {
        return eip20Token.balanceOf(accountAddress);
      }
-
 
     /**
      * The market place can be destructed by only the super admin, that too when we have at least 75% of the store owners

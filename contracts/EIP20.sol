@@ -12,22 +12,17 @@ contract EIP20 is EIP20Interface {
 
  mapping (address => uint256) private balances;
 
- mapping (address => mapping (address => uint256)) private allowed;
+ /**
+ * Ideally this mapping of the mapping shall be used. However, in this contract, I don't see
+ * a need yet.
+ */
+ mapping (address => mapping(address => uint256)) private allowed;
+
 /**
 * Initially the total supply will be zero. However, based on the store's loyalty
 * policy the store can issue a token, which will be valid across the market place.
 */
  uint256 private totalSupply_ = 0;
-/*
- constructor (
-        string _name,
-        string _symbol,
-        uint8 _decimals)
-      EIP20DetailedInterface(_name, _symbol, _decimals)
-      public
- {
-
- } */
 
 event IssuedNewTokens(
       address _senderAddress,
@@ -84,15 +79,14 @@ event IssuedNewTokens(
 
  /**
   * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
-  * Beware that changing an allowance with this method brings the risk that someone may use both the old
-  * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-  * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
-  * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+  * TODO: Currently, I am not using the allowed mapping. Which means I am partially fullfilling the
+  *       ERC20 token standard.
+  *
   * @param _spender The address which will spend the funds.
   * @param _value The amount of tokens to be spent.
   */
  function approve(address _spender, uint256 _value) public returns (bool) {
-   allowed[msg.sender][_spender] = _value;
+   // allowed[msg.sender][_spender] = _value;
    emit Approval(msg.sender, _spender, _value);
    return true;
  }
@@ -112,75 +106,30 @@ event IssuedNewTokens(
    returns (bool)
  {
    require(_value <= balances[_from]);
-   require(_value <= allowed[_from][msg.sender]);
+   // require(_value <= allowed[_from][msg.sender]);
    require(_to != address(0));
 
    balances[_from] = balances[_from].sub(_value);
    balances[_to] = balances[_to].add(_value);
-   allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+   // allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
    emit Transfer(_from, _to, _value);
    return true;
  }
 
  /**
-  * @dev Increase the amount of tokens that an owner allowed to a spender.
-  * approve should be called when allowed[_spender] == 0. To increment
-  * allowed value is better to use this function to avoid 2 calls (and wait until
-  * the first transaction is mined)
-  * From MonolithDAO Token.sol
-  * @param _spender The address which will spend the funds.
-  * @param _addedValue The amount of tokens to increase the allowance by.
-  */
- function increaseApproval(
-   address _spender,
-   uint256 _addedValue
- )
-   public
-   returns (bool)
- {
-   allowed[msg.sender][_spender] = (
-     allowed[msg.sender][_spender].add(_addedValue));
-   emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
-   return true;
- }
-
- /**
-  * @dev Decrease the amount of tokens that an owner allowed to a spender.
-  * approve should be called when allowed[_spender] == 0. To decrement
-  * allowed value is better to use this function to avoid 2 calls (and wait until
-  * the first transaction is mined)
-  * From MonolithDAO Token.sol
-  * @param _spender The address which will spend the funds.
-  * @param _subtractedValue The amount of tokens to decrease the allowance by.
-  */
- function decreaseApproval(
-   address _spender,
-   uint256 _subtractedValue
- )
-   public
-   returns (bool)
- {
-   uint256 oldValue = allowed[msg.sender][_spender];
-   if (_subtractedValue >= oldValue) {
-     allowed[msg.sender][_spender] = 0;
-   } else {
-     allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
-   }
-   emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
-   return true;
- }
-
+ * @dev this function will issue new tokens to the to address.
+ * @param _senderAddress - the smart contract using this method should know that the sender is ultimately
+ *      responsible for honoring all the tokens created in this system
+ * @param _toAddress - this accont will be credited with certain tokens
+ * @param _amount - the amount
+ */
  function issueNewTokens(
               address _senderAddress,
               address _toAddress,
               uint256 _amount ) public returns (uint256){
-   /** Sender shall transfer certain ether to the main marketplace accounts
-    * TODO: write corresponding logic
-    */
+
     _mint(_toAddress, _amount);
-
     emit IssuedNewTokens(_senderAddress, _toAddress, _amount);
-
     return balances[_toAddress];
  }
 
@@ -214,19 +163,4 @@ event IssuedNewTokens(
    emit Transfer(_account, address(0), _amount);
  }
 
- /**
-  * @dev Internal function that burns an amount of the token of a given
-  * account, deducting from the sender's allowance for said account. Uses the
-  * internal _burn function.
-  * @param _account The account whose tokens will be burnt.
-  * @param _amount The amount that will be burnt.
-  */
- function _burnFrom(address _account, uint256 _amount) internal {
-   require(_amount <= allowed[_account][msg.sender]);
-
-   // Should https://github.com/OpenZeppelin/zeppelin-solidity/issues/707 be accepted,
-   // this function needs to emit an event with the updated approval.
-   allowed[_account][msg.sender] = allowed[_account][msg.sender].sub(_amount);
-   _burn(_account, _amount);
- }
 }

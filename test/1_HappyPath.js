@@ -40,8 +40,19 @@ contract('MarketPlace', function(accounts){
         assert.include(storeOwnerCreated.receipt.status, "1", "Store owner should have been created by the Admin user!");
       });
 
-      it("The store owner who is not admin, shall have only the store owner access!", async function() {
+      it("The super administrator shall be able to transfer tokens to the store owners!", async function() {
+        let tokenReceipt = await myContract.allocateNewTokens(accounts[3], 1000000, {from:accounts[0]});
+        assert.include(tokenReceipt.receipt.status, "1", "The token allocation failed!");
 
+        tokenReceipt = await myContract.allocateNewTokens(accounts[4], 1000000, {from:accounts[0]});
+        assert.include(tokenReceipt.receipt.status, "1", "The token allocation failed!");
+      });
+
+      it("The super administrator shall be able to transfer tokens to the store owners!", async function() {
+        let tokenCount = await myContract.getTokenBalance(accounts[3]);
+        let tokenReceipt = await myContract.allocateNewTokens(accounts[3], 500000, {from:accounts[0]});
+        let increasedTokenCount = await myContract.getTokenBalance(accounts[3]);
+        assert.equal(increasedTokenCount.toNumber(), tokenCount.toNumber() + 500000, "The token balance did not increase!");
       });
 
   });
@@ -64,7 +75,6 @@ contract('MarketPlace', function(accounts){
     it("Get all the stores for a given store owner!", async function() {
         let stores = await myContract.getStores(accounts[3]);
         assert(stores.length == 3, "Two stores were expected!");
-        // console.log(stores);
     });
   });
 
@@ -168,7 +178,7 @@ contract('MarketPlace', function(accounts){
             console.log(response);
           }
         });
-        */
+     */
 
         let productDetails = await currentStore.getProductDetails(currentProductId);
         await currentStore.buyProductFromStore(currentProductId, 10, {from:accounts[7], gas: 2200000, value: 10 * productDetails[2]});
@@ -179,12 +189,13 @@ contract('MarketPlace', function(accounts){
 
     it("The shopper shall be able to earn tokens as per the discount percentage configured for a given product", async function(){
       let productDetails = await currentStore.getProductDetails(currentProductId);
-      await currentStore.buyProductFromStore(currentProductId, 20, {from:accounts[7], gas: 2200000, value: 20 * productDetails[2]});
-      let tokenBalance = await myContract.getTokenBalance(accounts[7]);
+      await currentStore.buyProductFromStore(currentProductId, 20, {from:accounts[8], gas: 2200000, value: 20 * productDetails[2]});
+      let tokenBalance = await myContract.getTokenBalance(accounts[8]);
+      let tokenPriceInWei = 10000000000000;
+      let expectedNewTokens = 20 * productDetails[2] * .1 / tokenPriceInWei;
 
-      assert.isAtLeast(tokenBalance.toNumber(), 0, "The number of tokens must have been greater than zero");
+      assert.isAtLeast(tokenBalance.toNumber(), expectedNewTokens, "The number of tokens must have been greater than zero");
     });
-
 
     it("The Owner of the store shall be able to withdraw fund from the store!", async function() {
       let currentBalance = await currentStore.getBalanceOfStore();
