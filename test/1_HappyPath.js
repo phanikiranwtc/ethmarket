@@ -38,6 +38,9 @@ contract('MarketPlace', function(accounts){
 
         storeOwnerCreated = await myContract.createStoreOwner(accounts[4], {from:accounts[1]});
         assert.include(storeOwnerCreated.receipt.status, "1", "Store owner should have been created by the Admin user!");
+
+        storeOwnerCreated = await myContract.createStoreOwner(accounts[5], {from:accounts[1]});
+        assert.include(storeOwnerCreated.receipt.status, "1", "Store owner should have been created by the Admin user!");
       });
 
       it("The super administrator shall be able to transfer tokens to the store owners!", async function() {
@@ -195,6 +198,32 @@ contract('MarketPlace', function(accounts){
       let expectedNewTokens = 20 * productDetails[2] * .1 / tokenPriceInWei;
 
       assert.isAtLeast(tokenBalance.toNumber(), expectedNewTokens, "The number of tokens must have been greater than zero");
+    });
+
+    it("A shopper shall be able to buy even when the store owner does not have enough token balances!", async function() {
+      // Add one more store for a different store owner than the earlier owners e.g.
+      let storeCreated = await myContract.createStoreFront("Store Acct4-1", "1st store of 5th account!", {from:accounts[5]});
+      assert.include(storeCreated.receipt.status, "1", "Store should have been created by the store owner!");
+
+      let stores = await myContract.getStores(accounts[5]);
+      assert.isAtLeast(stores.length, 1, "By now at least 1-stores should be in the market place for this account.");
+
+      let acct5Store = Store.at(stores[0]);
+      await acct5Store.addProductToTheStore(
+                              "iPhone 6 Plus",
+                              "The previous best version of iPhone",
+                              500000000000000,
+                              300,
+                              {from:accounts[5]});
+
+      let products = await acct5Store.getProducts(1);
+
+      let productDetails = await acct5Store.getProductDetails(products[0].toNumber());
+      await acct5Store.buyProductFromStore(currentProductId, 20, {from:accounts[8], gas: 2200000, value: 20 * productDetails[2]});
+      let updatedProductDetails = await acct5Store.getProductDetails(products[0].toNumber());
+
+      assert.equal(updatedProductDetails[3].toNumber(), productDetails[3].toNumber()-20, "After the successful purchase, the quantity of the product shall reduce by 20.");
+
     });
 
     it("The Owner of the store shall be able to withdraw fund from the store!", async function() {

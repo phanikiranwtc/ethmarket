@@ -60,12 +60,17 @@ contract Store {
     event PurchaseOfProduct(
         uint productId,
         uint quantity,
-        address storeAddress,
-        address storeOwner,
-        address buyerAddress,
+        address indexed storeAddress,
+        address indexed storeOwner,
+        address indexed buyerAddress,
         uint senderBalance,
         uint weiToTransfer
       );
+
+    event TokensCouldNotBeTransferred(
+        address _tokenFrom,
+        address _tokenTo,
+        uint256 tokensToBeTransferred );
 
     event LogAsEvent(address param1, address param2, string param3);
     /**
@@ -319,10 +324,17 @@ contract Store {
 
         // Transfer loyalty tokens to the shoppers
         if ( products[productIndex].discountPercentage > 0 ) {
-          eip20Token.transferFrom( owner,
-                                   msg.sender,
-                                   (weiToTransfer * products[productIndex].discountPercentage) / (tokenPriceInWei * 100)
-                                 );
+          uint256 tokensToBeTransferred = (weiToTransfer * products[productIndex].discountPercentage) / (tokenPriceInWei * 100);
+          if ( eip20Token.balanceOf(owner) >= tokensToBeTransferred ) {
+            eip20Token.transferFrom( owner,
+                                     msg.sender,
+                                     tokensToBeTransferred
+                                   );
+          } else {
+            // Just create an event which will indicate that certain number of tokens could not be Transferred
+            emit TokensCouldNotBeTransferred(owner, msg.sender, tokensToBeTransferred);
+          }
+
         }
 
 
