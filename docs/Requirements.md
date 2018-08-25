@@ -42,3 +42,13 @@ Here are some suggestions for additional components that your project could incl
 - Deploy your dApp to a testnet
 - Include the deployed contract address so people can interact with it
 - Serve the UI from IPFS or a traditional web server
+
+## ERC-20 Token
+As part of this PoC, let's have the following requirement covered
+1. The Super Admin shall be able to issue certain tokens to the store owners
+2. The corresponding ether shall be transferred from the store owners account to the Super Admin's account
+3. The store owners shall be able to transfer tokens to the shoppers (say for example based on the discount criteria)
+4. The shoppers shall be able to redeem the tokens to buy products
+5. The corresponding amount shall be reduced from the total product price and the balance payment shall be paid through the Ether
+6. The equivalent number of tokens shall be transferred to the store owner
+
