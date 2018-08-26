@@ -72,6 +72,7 @@ contract MarketPlace {
     /**
      * A super administrator can create one or more administrator, who will have same access, except that
      * they cannot create another administrator
+     * @param newAdminUser - the address of the new admin user
      */
     function createAdminUser(address newAdminUser) public onlySuperAdmin returns(address){
         require(!Utils.existInTheArray(adminUsers, newAdminUser), "The address is already in the Admin group!");
@@ -83,6 +84,7 @@ contract MarketPlace {
 
     /**
     * This function shall return all the admin address in the market place
+    * @return an array of admin users
     */
     function getAdminUsers() public view returns(address[]) {
       return adminUsers;
@@ -93,6 +95,8 @@ contract MarketPlace {
     * - Super Admin
     * - Admins
     * - Store Owner
+    * @param addressToVerify - the address for which the different access needs to be checked
+    * @return the access flag indicating if the address is a Super Admin or an Admin or a Store Owner
     */
     function checkAccess(address addressToVerify) view public returns(bool, bool, bool) {
       bool isAdmin = Utils.existInTheArray(adminUsers, addressToVerify);
@@ -107,8 +111,10 @@ contract MarketPlace {
     }
 
     /**
-     * Any Admin shall be able to add a store owner.
-     * Of course, we need to make sure that a given address is added only once.
+     * @dev Any Admin shall be able to add a store owner.
+     *      Of course, we need to make sure that a given address is added only once.
+     * @param newStoreOwnerAddress the address of the new store owners
+     *
     */
     function createStoreOwner(address newStoreOwnerAddress) public onlyAdmin returns(bool){
         require( !Utils.existInTheArray(storeOwners, newStoreOwnerAddress), "The store owner with the same address already exist!");
@@ -121,6 +127,7 @@ contract MarketPlace {
 
     /**
     * This function shall return all the store owners address in the market place
+    * @return returns an array consisting of all the store owners.
     */
     function getStoreOwners() public view returns(address[]) {
       return storeOwners;
@@ -130,7 +137,8 @@ contract MarketPlace {
      * A store owner shall be able to create one or more stores.
      * The created store will be associated with the store owner using storeFrontMap, where the store owner's
      * address is a key and the value is a map of storeId and Store.
-     *
+     * @param storeName - store name
+     * @param storeDescription - A brief description of the store
     */
     function createStoreFront( string storeName, string storeDescription ) public onlyStoreOwner returns(address){
         uint storeCount = storeFrontMap[msg.sender].length;
@@ -160,8 +168,9 @@ contract MarketPlace {
     }
 
     /**
-     * this function will be used for retriving all the stores of a given store owner
-     *
+     * @dev this function will be used for retriving all the stores of a given store owner
+     * @param storeOwnerAddress - the optional parameter to decide if the store is needed for a specific store owner or are we looking for all the stores
+     * @return an array consisting of the address of the stores
      */
     function getStores(address storeOwnerAddress) public view returns(address[]) {
         if ( storeOwnerAddress != 0 ) {
@@ -199,6 +208,9 @@ contract MarketPlace {
     /**
      * Any Admin shall be able to allocate certain number of new tokens to a store owner.
      * Of course, we need to make sure that a given address is indeed a store owner
+     * @param storeOwnerAddress - the store owner's address whose account will be credited with the tokens
+     * @param numberOfTokens - the number of tokens to be credited to the store storeOwners
+     * @return the increased token balance of the store owners
     */
     function allocateNewTokens(address storeOwnerAddress, uint256 numberOfTokens) public onlySuperAdmin returns(uint256){
         require( Utils.existInTheArray(storeOwners, storeOwnerAddress), "The provided address is not a store owner!");
@@ -207,7 +219,7 @@ contract MarketPlace {
 
     /**
      * @dev This method returns the token balance of a given account.
-     * @param accountAddress is the address whose balance is being queried
+     * @param accountAddress - is the address whose balance is being queried
      */
      function getTokenBalance(address accountAddress) public view returns(uint256 tokenBalance) {
        return eip20Token.balanceOf(accountAddress);

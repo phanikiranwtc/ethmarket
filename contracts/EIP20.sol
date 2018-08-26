@@ -122,6 +122,7 @@ event IssuedNewTokens(
  *      responsible for honoring all the tokens created in this system
  * @param _toAddress - this accont will be credited with certain tokens
  * @param _amount - the amount
+ * @return the balance of the account to whom the token is being issued
  */
  function issueNewTokens(
               address _senderAddress,

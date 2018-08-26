@@ -131,7 +131,10 @@ contract Store {
      *
      * TODO: Add expiry feature and use the Auto Deprecation pattern to expire a product. Also, implement the use case
      *      that will prevent the shoppers from buying an expired product!
-     *
+     * @param productName - The name of the products
+     * @param productDesc - A brief description about the product
+     * @param price - the listed price of the product
+     * @param quantity - the initial quantity of the product
     */
     function addProductToTheStore(
             string productName,
@@ -197,6 +200,7 @@ contract Store {
      * A store owner can decide to remove a product from his/her store.
      * A removed product will not be visible to shoppers!
      *
+     * @param _productId is the product identifier of the product that we intend to remove
     */
     function removeProduct(uint _productId ) public onlyOwner returns(bool){
         uint productIndex = _productId - 1;
@@ -210,7 +214,7 @@ contract Store {
     /**
      * A store owner can decide to remove a product from his/her store.
      * A removed product will not be visible to shoppers!
-     *
+     * @param _productId is the product identifier of the product that we intend to reactivate
     */
     function reActivateProduct(uint _productId ) public onlyOwner returns(bool){
         uint productIndex = _productId - 1;
@@ -222,7 +226,9 @@ contract Store {
     }
 
     /**
-    * getProducts will return all the products of this store.
+    * @dev getProducts will return all the products of this store.
+    * @param activeOnlyFlag is an optional flag to indicate of only the active products of the store are desired.
+    * @return an array consisting of the product Ids
     */
     function getProducts( bool activeOnlyFlag ) public view returns( uint[] ) {
 
@@ -264,7 +270,15 @@ contract Store {
 
 
     /*
-    * For a given product identifier of the store, this method will return the product details.
+    * @dev For a given product identifier of the store, this method will return the product details.
+    * @param _productId - the product Id for which the details are needed
+    * @return a list of arguments showing values in the following orders
+    *   1. Product Name
+    *   2. Product description
+    *   3. price
+    *   4. Current quantity
+    *   5. Status of the product
+    *   6. Discount percentage available on this product
     */
     function getProductDetails(uint _productId) public view returns(string, string, uint, uint, ProductStatus, uint256 ) {
         uint productIndex = _productId - 1;
@@ -278,10 +292,9 @@ contract Store {
     }
 
     /**
-     * The shopper can buy this product using this function.
-     *   // owner.transfer( weiToTransfer );
-       // address(this).transfer( msg.value );
-       // owner.transfer( msg.value );
+     * @dev The shopper can buy this product using this function.
+     * @param _productId - product indetifier
+     * @param _quantity - number of units of the product to be Purchased
     */
     function buyProductFromStore(uint _productId, uint _quantity) public payable returns (bool){
         uint productIndex = _productId - 1;
@@ -337,15 +350,15 @@ contract Store {
 
         }
 
-
         return true;
     }
 
     /**
-     * A store owner can withdraw fund from a given store
+     * @dev A store owner can withdraw fund from a given store
      *
      * BP1: Fail early and fail loud
      *  - Fail early and fail loud pattern has been used to ensure that zero amount withdrwal doesn't take place.
+     * @param withdrawAmount - the amount to be withdrawn from the stor's contract accounts
     */
     function withdrawFund(uint withdrawAmount) public payable onlyOwner returns(bool) {
         require(withdrawAmount > 0, "The withdrwal amount must be a positive number!");
