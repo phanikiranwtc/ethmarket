@@ -10,9 +10,10 @@ Refer to the below URL for complete details about the requirement: https://githu
 # Project Setup 
 
 ## Creating a project
-> mkdir marketplace
-> cd marketplace/
-
+```
+$ mkdir marketplace
+$ cd marketplace/
+```
 Use the following command to create the project:
 > truffle init
 
