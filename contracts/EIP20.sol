@@ -1,4 +1,4 @@
-pragma solidity ^0.4.22;
+pragma solidity 0.4.24;
 
 import "./EIP20Interface.sol";
 import "./library/SafeMath.sol";
@@ -70,6 +70,7 @@ event IssuedNewTokens(
  function transfer(address _to, uint256 _value) public returns (bool) {
    require(_value <= balances[msg.sender]);
    require(_to != address(0));
+   require(balances[_to] + _value >= balances[_to]);
 
    balances[msg.sender] = balances[msg.sender].sub(_value);
    balances[_to] = balances[_to].add(_value);

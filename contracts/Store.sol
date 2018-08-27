@@ -1,4 +1,4 @@
-pragma solidity ^0.4.22;
+pragma solidity 0.4.24;
 
 import "./EIP20.sol";
 
@@ -27,6 +27,7 @@ contract Store {
     uint private nextProductId;
     Product[] private products;
     EIP20 private eip20Token;
+    bool private lockTokenBalances;
 
     /**
     * At some stage we can oraclize the token price. However, for now let's consider this
@@ -72,7 +73,7 @@ contract Store {
         address _tokenTo,
         uint256 tokensToBeTransferred );
 
-    event LogAsEvent(address param1, address param2, string param3);
+    event EtherReceived(address senderAddress, uint256 amount);
     /**
     * @dev Creates a Store Contract which holds the associated products and the balance corresponding to the
     *      sales of such products.
@@ -99,8 +100,13 @@ contract Store {
 
     /**
     * Since this contract needs to accept ether, declare an anonymous payable function.
+    * Also, this fall back is only intended for accepting the ether. Hence, there shall not be any message transferred
+    * during this call.
     */
-    function() public payable { }
+    function() public payable {
+      require(msg.data.length == 0);
+      emit EtherReceived(msg.sender, msg.value);
+    }
 
     /**
      * Only (store) owners shall be allowed to add or update the store specific details - e.g. product.
@@ -306,6 +312,7 @@ contract Store {
         require( msg.value <= msg.sender.balance, "The buyer does not have sufficient balance in his / her account!");
         // require( msg.value == weiToTransfer, "The supplied value is lesser than the actual price of the items!");
 
+
         //Reduce the corresponding quantity from the inventory
         products[productIndex].quantity = products[productIndex].quantity - _quantity;
 
@@ -313,6 +320,8 @@ contract Store {
 
         // Redeem tokens by transferring the equivalent amount of tokens to the store owners
         uint256 discountValue = 0;
+        require(!lockTokenBalances, "The balance is already being transferred to someone, try again!");
+        lockTokenBalances = true;
 
         if (eip20Token.balanceOf(msg.sender) > 0) {
           uint256 tokenValue = eip20Token.balanceOf(msg.sender) * tokenPriceInWei;
@@ -349,6 +358,8 @@ contract Store {
           }
 
         }
+
+        lockTokenBalances = false;
 
         return true;
     }
