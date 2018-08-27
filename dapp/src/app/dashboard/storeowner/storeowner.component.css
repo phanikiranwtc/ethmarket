@@ -10,16 +10,12 @@
 .pro{
     border:0px;
     margin:10px;
-    background-color: #ffffff;
+    background-color: #ffffa0;
     width: 100%;
-    /* width:180px; */
-    /* 90%; */
     padding: 1em;
-    /* margin-left:200px */
-    margin-top: 0px;
+    margin-top: 5px;
     margin-bottom: 20px;
     height: 80px;
-    /* position: relative; */
     box-sizing: border-box;
 -moz-box-sizing: border-box;
 -ms-box-sizing: border-box;

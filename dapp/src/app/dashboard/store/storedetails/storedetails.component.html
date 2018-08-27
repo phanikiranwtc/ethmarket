@@ -2,9 +2,12 @@
 <div  fxLayout="column" >
 <div  fxFlex="20" class="header">
   <!-- fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" > -->
- <mat-card-content>  Store Name : {{store.storedetail[1]}} - {{store.storeAddr}}</mat-card-content><br>
- <mat-card-content>Description : {{store.storedetail[3]}}<br>
- Store Owner : {{store.storedetail[0]}}
+ <mat-card-content >
+   <span>{{store.storedetail[1]}} ({{store.storeAddr}}) </span>
+   <span class="rightspan">{{store.storedetail[0]}} </span>
+ </mat-card-content>
+   <br>
+ <mat-card-content>{{store.storedetail[3]}}<br>
  </mat-card-content>
 </div>
 <div fxFlex="80">

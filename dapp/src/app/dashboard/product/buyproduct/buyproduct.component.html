@@ -1,12 +1,15 @@
-<h1 mat-dialog-title>Buy Product</h1>
+<h1 mat-dialog-title>Buy Product </h1>
 <div mat-dialog-content>
-  <p>Enter the quantity to purchase:</p>
   <mat-form-field class="mat-input-wrapper">
-    <input disabled matInput [(ngModel)]="data.selectedProductId">
+    Name: <input disabled matInput [(ngModel)]="data.selectedProduct.productdetail[0]">
+    Price: <input disabled matInput [(ngModel)]="data.selectedProduct.productdetail[2]">
+    Available Quantity : <input disabled matInput [(ngModel)]="data.selectedProduct.productdetail[3]">
   </mat-form-field>
+
   <mat-form-field class="mat-input-wrapper">
-    <input matInput [(ngModel)]="quantity">
+    <input placeholder="Number of items desired" matInput [(ngModel)]="quantity" autofocus>
   </mat-form-field>
+
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Cancel</button>

@@ -7,12 +7,14 @@
 <div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" >
 <div  *ngFor="let product of products;let i='index' " >
 <div [ngClass]="['pro']" >
-<span class="pro-header">{{product.productdetail[0]}}</span>
+<span class="pro-header">
+  {{product.productdetail[0]}}
+  <mat-icon *ngIf="parent==1" class="icon" (click)="openDialog(i)">shopping_cart</mat-icon>
+  <mat-icon *ngIf="parent==0" class="icon" (click)="editProduct(i)">edit</mat-icon>
+</span>
 <p>{{product.productdetail[1]}}</p>
 <p>Price: {{product.productdetail[2]}} </p>
-<p>Inventory: {{product.productdetail[3]}}
-<mat-icon *ngIf="parent==1" class="icon" (click)="openDialog(i)">shopping_cart</mat-icon>
-<mat-icon *ngIf="parent==0" class="icon" (click)="editProduct(i)">edit</mat-icon></p>
+<p>Inventory: {{product.productdetail[3]}}</p>
 </div>
 <!-- <mat-card>
 <mat-card-title>{{product.productName}}</mat-card-title>

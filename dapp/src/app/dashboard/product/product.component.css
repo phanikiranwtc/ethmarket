@@ -3,14 +3,12 @@
     border:0px;
     margin:10px;
     background-color: #ffffff;
-    /* width:180px; */
-    width: 100%;
-    /* 90%; */
+    width: 300px;
     padding: 1em;
     /* margin-left:200px */
     margin-top: 0px;
     margin-bottom: 20px;
-    height: 150px;
+    height: 200px;
     /* position: relative; */
     box-sizing: border-box;
 -moz-box-sizing: border-box;

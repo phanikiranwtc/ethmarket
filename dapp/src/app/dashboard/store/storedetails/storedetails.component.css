@@ -6,8 +6,13 @@
   margin-top: 0px;
   padding-top: 0px;
   margin-bottom: 20px;
-  text-align: center;
+  text-align: left;
 }
 .addbutton{
   float: right;
+}
+.rightspan{
+  float: right;
+  margin-right:20px;
+  text-align: right;
 }

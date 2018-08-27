@@ -60,7 +60,7 @@ activeAccount : any;
       console.log(this.selectedProductId);
       const dialogRef = this.dialog.open(BuyproductComponent, {
         width: '450px',
-        data: { selectedProductId: this.selectedProductId}
+        data: { selectedProduct : this.products[idx] }
       });
 
       dialogRef.afterClosed().subscribe(result => {
