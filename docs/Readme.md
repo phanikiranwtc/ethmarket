@@ -60,6 +60,7 @@ You may need to run the following command in the main project directory as well 
 ```
 npm install
 ```
-
+## Block Gas Limit
+Increase the block gas limit in Ganache. For example, I have set a value of 9998888890.
 
 
