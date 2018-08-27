@@ -1,0 +1,32 @@
+<div class="container">
+<div  fxLayout="row">
+<mat-toolbar color="primary">
+  <span>Angular Truffle Box - Online Market</span>
+  <!-- This fills the remaining space of the current row -->
+  <span class="example-fill-remaining-space"></span>
+  <span><mat-icon (click)="logout()">logout</mat-icon></span>
+</mat-toolbar>
+</div>
+<mat-sidenav-container >
+  <mat-sidenav mode="side" opened class="sidebar">
+    <button mat-button [matMenuTriggerFor]="menu">Dashboard</button>
+    <mat-menu #menu="matMenu">
+      <div *ngIf="isSuperAdmin">
+      <button mat-menu-item  [routerLink]="['/dashboard/admin']">Browse Accounts and Admins</button>
+      </div>
+      <div *ngIf="isSuperAdmin || isAdmin">
+        <button mat-menu-item  [routerLink]="['/dashboard/storeowner']">Browse Store Owners</button>
+      </div>
+      <div *ngIf="isStoreOwner">
+        <button mat-menu-item  [routerLink]="['/dashboard/stores']">My Stores</button>
+      </div>
+    <button mat-menu-item  [routerLink]="['/dashboard/allstores']">Browse Stores</button>
+    <!-- <button mat-menu-item  [routerLink]="['/dashboard/products']">Browse Products</button> -->
+  </mat-menu>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+<!-- <app-meta-sender></app-meta-sender> -->
+  </mat-sidenav-content>
+</mat-sidenav-container>
+</div>

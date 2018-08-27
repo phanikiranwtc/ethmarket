@@ -1,0 +1,22 @@
+<div fxLayout="row" >
+<h3 fxFlex="88" class="header"> Admin Account Details</h3>
+<button class="addbutton" mat-raised-button (click)="openDialog()">Add Admin</button>
+</div>
+<div fxLayout="column" fxLayoutGap="10px">
+<div fxFlex="90">
+<div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" >
+<div  *ngFor="let account of admins;let i='index' " >
+<div [ngClass]="['pro']" >
+<div class="pro-header">{{account}}</div>
+<!-- <mat-checkbox class="check" [checked]= (account.access[0]) [disabled]=(account.access[0]) (change)="setAdmin(account.account,i)">Admin</mat-checkbox> -->
+</div>
+<!-- <mat-card>
+<mat-card-title>{{product.productName}}</mat-card-title>
+<mat-card-content>{{product.description}}
+<span>{{product.dateOfManufacture}}:{{product.dateOfExpiry}}</span>
+</mat-card-content>
+</mat-card> -->
+</div>
+</div>
+</div>
+</div>

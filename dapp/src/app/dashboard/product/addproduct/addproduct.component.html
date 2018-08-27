@@ -1,0 +1,26 @@
+<h3 class="header"> Product Details</h3>
+<div  fxLayout="column">
+<div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap  fxFlexFill fxLayoutGap="5%" >
+<mat-form-field>
+   <input matInput placeholder="Store " size="50%" [value]="store" disabled>
+ </mat-form-field>
+ <mat-form-field>
+    <input matInput placeholder="Product Name" [(ngModel)]="product.name">
+  </mat-form-field>
+</div>
+<div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap  fxFlexFill fxLayoutGap="5%">
+ <mat-form-field>
+   <textarea matInput placeholder="Description" [(ngModel)]="product.description"></textarea>
+ </mat-form-field>
+
+ <mat-form-field>
+    <input matInput placeholder="Price" [(ngModel)]="product.price">
+ </mat-form-field>
+ <mat-form-field>
+    <input matInput placeholder="Inventory"  [(ngModel)]="product.quantity">
+ </mat-form-field>
+</div>
+<div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap  fxFlexFill fxLayoutGap="5%">
+<button class="ui-button-primary" (click)="addProductToTheStore()" mat-raised-button >Save</button>
+ <button class="ui-button-info" (click)="reset()" mat-raised-button >Reset</button>
+</div>

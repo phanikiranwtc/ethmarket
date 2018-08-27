@@ -1,0 +1,19 @@
+<div fxLayout="column" fxLayoutGap="10px">
+  <div  fxFlex="10">
+    <div fxLayout="row" >
+    <h3 fxFlex="85" class="header"> Store Owner Accounts</h3>
+    <button class="addbutton" mat-raised-button (click)="addStoreOwner()">Add Store Owner</button>
+    </div>
+  </div>
+<div fxFlex="90">
+<div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" >
+<div  *ngFor="let storeOwner of storeOwners;let i='index' "  (click)="show(storeOwner)" >
+<div [ngClass]="['pro']" >
+<span class="pro-header">{{storeOwner}}</span>
+<!-- <p>{{product.description}}</p>
+<span>{{product.dateOfManufacture}}:{{product.dateOfExpiry}}</span> -->
+</div>
+</div>
+</div>
+</div>
+</div>

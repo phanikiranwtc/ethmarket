@@ -1,0 +1,81 @@
+{"products" :
+  [{
+        "uniqueId":"10101",
+        "productName": "Samsung",
+        "description": " enhanced featured mobile",
+        "dateOfManufacture": "03-04-2018",
+        "dateOfExpiry": "03-04-2018",
+        "price" : 100,
+        "inventory": 100
+      },
+    {
+        "uniqueId":"10101",
+        "productName": "Nokia",
+        "description": "connecting everywhere",
+        "dateOfManufacture": "03-04-2018",
+        "dateOfExpiry": "03-04-2018",
+        "price" : 100,
+        "inventory": 100
+    },
+    {
+        "uniqueId":"10101",
+        "productName": "Micromax",
+        "description": "nothing like anything",
+        "dateOfManufacture": "03-04-2018",
+        "dateOfExpiry": "03-04-2018",
+        "price" : 100,
+        "inventory": 100
+    },{
+          "uniqueId":"10101",
+          "productName": "Samsung",
+          "description": " enhanced featured mobile",
+          "dateOfManufacture": "03-04-2018",
+          "dateOfExpiry": "03-04-2018",
+          "price" : 100,
+          "inventory": 100
+        },
+      {
+          "uniqueId":"10101",
+          "productName": "Nokia",
+          "description": "connecting everywhere",
+          "dateOfManufacture": "03-04-2018",
+          "dateOfExpiry": "03-04-2018",
+          "price" : 100,
+          "inventory": 100
+      },
+      {
+          "uniqueId":"10101",
+          "productName": "Micromax",
+          "description": "nothing like anything",
+          "dateOfManufacture": "03-04-2018",
+          "dateOfExpiry": "03-04-2018",
+          "price" : 100,
+          "inventory": 100
+      },{
+            "uniqueId":"10101",
+            "productName": "Samsung",
+            "description": " enhanced featured mobile",
+            "dateOfManufacture": "03-04-2018",
+            "dateOfExpiry": "03-04-2018",
+            "price" : 100,
+            "inventory": 100
+          },
+        {
+            "uniqueId":"10101",
+            "productName": "Nokia",
+            "description": "connecting everywhere",
+            "dateOfManufacture": "03-04-2018",
+            "dateOfExpiry": "03-04-2018",
+            "price" : 100,
+            "inventory": 100
+        },
+        {
+            "uniqueId":"10101",
+            "productName": "Micromax",
+            "description": "nothing like anything",
+            "dateOfManufacture": "03-04-2018",
+            "dateOfExpiry": "03-04-2018",
+            "price" : 100,
+            "inventory": 100
+        }]
+      }

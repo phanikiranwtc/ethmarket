@@ -1,0 +1,21 @@
+<!-- <h3 class="header"> Store Owner Details</h3>
+<div  fxLayout="column">
+<div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" >
+<mat-form-field>
+   <input matInput placeholder="Store Owner Address"  [(ngModel)]="stOwner">
+ </mat-form-field>
+  <button  (click)="addStoreOwnerDetails()" mat-raised-button >Save</button>
+  <button  (click)="reset()" mat-raised-button >Reset</button>
+</div>
+</div> -->
+<h1 mat-dialog-title>Add Store Owner</h1>
+<div mat-dialog-content>
+  <p>Enter the account number</p>
+  <mat-form-field class="mat-input-wrapper">
+    <input matInput [(ngModel)]="stOwner">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="stOwner" cdkFocusInitial>Ok</button>
+</div>

@@ -1,0 +1,16 @@
+<h3 class="header"> Store Details</h3>
+<div  fxLayout="column" >
+<div  fxFlex="20" class="header">
+  <!-- fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" > -->
+ <mat-card-content>  Store Name : {{store.storedetail[1]}} - {{store.storeAddr}}</mat-card-content><br>
+ <mat-card-content>Description : {{store.storedetail[3]}}<br>
+ Store Owner : {{store.storedetail[0]}}
+ </mat-card-content>
+</div>
+<div fxFlex="80">
+<app-product [store]="store.storeAddr" [parent]="parent"></app-product>
+</div>
+<!-- <button class="ui-button-primary" (click)="onSave()" mat-raised-button >Save</button>
+  <button class="ui-button-info" (click)="Reset()" mat-raised-button >Reset</button> -->
+</div>
+<!-- </div> -->

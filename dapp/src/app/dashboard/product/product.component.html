@@ -1,0 +1,26 @@
+<div fxLayout="column" fxLayoutGap="10px">
+  <div *ngIf="parent==0" fxFlex="20">
+    <div fxLayout="row" fxFlex="70"></div>
+    <div fxFlex="30">  <button (click)="addProduct()" mat-raised-button class="addbutton">Add Product</button></div>
+  </div>
+  <div fxFlex="80">
+<div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" >
+<div  *ngFor="let product of products;let i='index' " >
+<div [ngClass]="['pro']" >
+<span class="pro-header">{{product.productdetail[0]}}</span>
+<p>{{product.productdetail[1]}}</p>
+<p>Price: {{product.productdetail[2]}} </p>
+<p>Inventory: {{product.productdetail[3]}}
+<mat-icon *ngIf="parent==1" class="icon" (click)="openDialog(i)">shopping_cart</mat-icon>
+<mat-icon *ngIf="parent==0" class="icon" (click)="editProduct(i)">edit</mat-icon></p>
+</div>
+<!-- <mat-card>
+<mat-card-title>{{product.productName}}</mat-card-title>
+<mat-card-content>{{product.description}}
+<span>{{product.dateOfManufacture}}:{{product.dateOfExpiry}}</span>
+</mat-card-content>
+</mat-card> -->
+</div>
+</div>
+</div>
+</div>

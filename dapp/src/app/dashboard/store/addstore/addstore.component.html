@@ -1,0 +1,19 @@
+<h3 class="header"> Store Details</h3>
+<div  fxLayout="column">
+<div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" >
+<mat-form-field>
+   <input matInput placeholder="Store Name" [(ngModel)]="store.name">
+ </mat-form-field>
+ <!-- <mat-form-field>
+    <input matInput placeholder="Account Number" value="staddress">
+  </mat-form-field> -->
+</div>
+<div >
+ <mat-form-field>
+   <textarea matInput placeholder="Description" [(ngModel)]="store.description"></textarea>
+ </mat-form-field>
+
+<!-- <app-product></app-product> -->
+<button class="ui-button-primary" (click)="onSave()" mat-raised-button >Save</button>
+  <button class="ui-button-info" (click)="Reset()" mat-raised-button >Reset</button>
+</div>

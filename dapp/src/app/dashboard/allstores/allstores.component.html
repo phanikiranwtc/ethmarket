@@ -1,0 +1,29 @@
+
+
+<div fxLayout="column" fxLayoutGap="10px">
+  <div fxFlex="10">
+    <div fxLayout="row" >
+    <h3 fxFlex="88" class="header"> Store Details</h3>
+    </div>
+  </div>
+<div *ngIf="stores" fxFlex="90">
+<div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" >
+<div  *ngFor="let store of stores;let i='index' "  (click)="show(i)" >
+<div *ngIf= "activeAccount && (activeAccount.toUpperCase() !== store.storedetail[0].toUpperCase())" [ngClass]="['pro']" >
+<span class="pro-header">{{store.storeAddr}}</span>
+<p>{{store.storedetail[1]}}</p>
+{{store.storedetail[0]}}
+</div>
+<div *ngIf="stores==undefined || stores.length==0">
+<mat-card-content>  No stores defined! </mat-card-content>
+</div>
+<!-- <mat-card>
+<mat-card-title>{{product.productName}}</mat-card-title>
+<mat-card-content>{{product.description}}
+<span>{{product.dateOfManufacture}}:{{product.dateOfExpiry}}</span>
+</mat-card-content>
+</mat-card> -->
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,26 @@
+<h3 class="header"> Product Details</h3>
+<div  fxLayout="column">
+<div  fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap  fxFlexFill fxLayoutGap="5%" >
+<mat-form-field>
+   <input matInput placeholder="Store Name" size="50%" [(ngModel)]="data.store" disabled>
+ </mat-form-field>
+ <mat-form-field>
+    <input matInput placeholder="Product Name" [(ngModel)]="data.selectedProduct.productdetail[0]">
+  </mat-form-field>
+</div>
+<div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap  fxFlexFill fxLayoutGap="5%">
+ <mat-form-field>
+   <textarea matInput placeholder="Description" [(ngModel)]="data.selectedProduct.productdetail[1]"></textarea>
+ </mat-form-field>
+
+ <mat-form-field>
+    <input matInput placeholder="Price" [(ngModel)]="data.selectedProduct.productdetail[2]">
+ </mat-form-field>
+ <mat-form-field>
+    <input matInput placeholder="Inventory" [(ngModel)]="data.selectedProduct.productdetail[3]">
+ </mat-form-field>
+</div>
+<div fxLayout="row wrap" fxLayout.xs="column" fxLayoutWrap  fxFlexFill fxLayoutGap="5%">
+<button class="ui-button-primary"  [mat-dialog-close]="data.selectedProduct"  mat-raised-button cdkFocusInitial >Save</button>
+ <button class="ui-button-info" (click)="onNoClick()" mat-raised-button >Reset</button>
+</div>
