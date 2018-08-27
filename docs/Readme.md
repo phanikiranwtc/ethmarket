@@ -63,4 +63,8 @@ npm install
 ## Block Gas Limit
 Increase the block gas limit in Ganache. For example, I have set a value of 9998888890.
 
+Also, refer to the network config options in the truffle.js file and adjust gas limit if needed.
+
+## On Windows machine
+On windows machine you may need to copy the truffle.js file into truffle-config.js file. 
 
