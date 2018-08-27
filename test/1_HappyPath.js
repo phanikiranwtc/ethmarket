@@ -7,6 +7,7 @@ contract('MarketPlace', function(accounts){
   let myContract;
   let currentStore;
   let currentProductId = -1;
+  let emergencyFlag = false;
 
   MarketPlace.deployed().then(function(instance) {
     myContract = instance;
@@ -22,6 +23,12 @@ contract('MarketPlace', function(accounts){
       it("The first account shall be added as an Admin by default!", async function(){
         let accessFlags = await myContract.checkAccess(accounts[0]);
         assert(accessFlags[1], "The first account of the network must have been an Admin by default!");
+      });
+
+      it("In case of emergency, the super admin shall be able to declare emergency. All the functionalities shall cease to work!", async function(){
+        if (emergencyFlag) {
+          await myContract.haltMarket({from:accounts[0]});
+        }
       });
 
       it("The Super Admin, i.e. the first account, shall be able to add one or more admin user!", async function(){

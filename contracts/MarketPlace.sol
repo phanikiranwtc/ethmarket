@@ -20,6 +20,7 @@ contract MarketPlace {
     address[] public storeOwners;
     uint private nextStoreId;
     EIP20 private eip20Token;
+    bool private emergency;
 
     // mapping of stores of a given store owner
     mapping (address => address[]) public storeFrontMap;
@@ -32,6 +33,7 @@ contract MarketPlace {
         superAdmin = msg.sender;
         adminUsers.push(msg.sender);
         nextStoreId = 1;
+        emergency = false;
         eip20Token = new EIP20();
     }
 
@@ -50,6 +52,22 @@ contract MarketPlace {
     modifier onlySuperAdmin {
         require( msg.sender == superAdmin, "Only Super Administrator can invoke this function.");
         _;
+    }
+
+    /**
+    * This functionality ensure that a given call will take place only when there is an emergency situation in place.
+    */
+    modifier onlyEmergency {
+      require( emergency, "This functionality can be invoked only during an emergency!");
+      _;
+    }
+
+    /**
+    * This functionality ensure that a given call will take place only when there is a regular course of business taking place.
+    */
+    modifier onlyDuringRegularBusiness {
+      require( !emergency, "This functionality can be invoked only during a regular course of business!");
+      _;
     }
 
     /**
@@ -74,7 +92,10 @@ contract MarketPlace {
      * they cannot create another administrator
      * @param newAdminUser - the address of the new admin user
      */
-    function createAdminUser(address newAdminUser) public onlySuperAdmin returns(address){
+    function createAdminUser(address newAdminUser) public
+            onlySuperAdmin onlyDuringRegularBusiness
+            returns(address) {
+
         require(!Utils.existInTheArray(adminUsers, newAdminUser), "The address is already in the Admin group!");
 
         adminUsers.push(newAdminUser);
@@ -98,7 +119,10 @@ contract MarketPlace {
     * @param addressToVerify - the address for which the different access needs to be checked
     * @return the access flag indicating if the address is a Super Admin or an Admin or a Store Owner
     */
-    function checkAccess(address addressToVerify) view public returns(bool, bool, bool) {
+    function checkAccess(address addressToVerify) view public
+              onlyDuringRegularBusiness
+              returns(bool, bool, bool) {
+
       bool isAdmin = Utils.existInTheArray(adminUsers, addressToVerify);
       bool isStoreOwner = Utils.existInTheArray(storeOwners, addressToVerify);
       bool isSuperAdmin = false;
@@ -116,7 +140,9 @@ contract MarketPlace {
      * @param newStoreOwnerAddress the address of the new store owners
      *
     */
-    function createStoreOwner(address newStoreOwnerAddress) public onlyAdmin returns(bool){
+    function createStoreOwner( address newStoreOwnerAddress) public
+              onlyAdmin onlyDuringRegularBusiness
+              returns(bool) {
         require( !Utils.existInTheArray(storeOwners, newStoreOwnerAddress), "The store owner with the same address already exist!");
 
         storeOwners.push(newStoreOwnerAddress);
@@ -140,7 +166,12 @@ contract MarketPlace {
      * @param storeName - store name
      * @param storeDescription - A brief description of the store
     */
-    function createStoreFront( string storeName, string storeDescription ) public onlyStoreOwner returns(address){
+    function createStoreFront(
+                string storeName,
+                string storeDescription ) public
+                onlyStoreOwner onlyDuringRegularBusiness
+                returns(address) {
+
         uint storeCount = storeFrontMap[msg.sender].length;
 
         if (storeCount == 0) {
@@ -172,7 +203,10 @@ contract MarketPlace {
      * @param storeOwnerAddress - the optional parameter to decide if the store is needed for a specific store owner or are we looking for all the stores
      * @return an array consisting of the address of the stores
      */
-    function getStores(address storeOwnerAddress) public view returns(address[]) {
+    function getStores(address storeOwnerAddress) public view
+            onlyDuringRegularBusiness
+            returns(address[]) {
+
         if ( storeOwnerAddress != 0 ) {
             return storeFrontMap[storeOwnerAddress];
         }
@@ -212,7 +246,12 @@ contract MarketPlace {
      * @param numberOfTokens - the number of tokens to be credited to the store storeOwners
      * @return the increased token balance of the store owners
     */
-    function allocateNewTokens(address storeOwnerAddress, uint256 numberOfTokens) public onlySuperAdmin returns(uint256){
+    function allocateNewTokens(
+                  address storeOwnerAddress,
+                  uint256 numberOfTokens )
+                  public onlySuperAdmin onlyDuringRegularBusiness
+                  returns(uint256) {
+
         require( Utils.existInTheArray(storeOwners, storeOwnerAddress), "The provided address is not a store owner!");
         return eip20Token.issueNewTokens(superAdmin, storeOwnerAddress, numberOfTokens);
     }
@@ -236,6 +275,22 @@ contract MarketPlace {
 
         selfdestruct(superAdmin);
     }
+
+    /**
+     * @dev there may be situations where the operator may identify risks and he/she may like to put a holds
+     * on the key transactions in the market place. This function can be used to achieve the same.
+    */
+    function haltMarket() public onlySuperAdmin {
+      emergency = true;
+    }
+
+    /**
+     * @dev - if the Super Admin had already declared emergency then this function can be used to revoke emergency
+    */
+    function reinstateMarket() public onlySuperAdmin onlyEmergency {
+      emergency = false;
+    }
+
 
     /**
      * In case we want to allow the closure of the Market Place then implement this function

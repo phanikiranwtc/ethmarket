@@ -361,7 +361,7 @@ contract Store {
      * @param withdrawAmount - the amount to be withdrawn from the stor's contract accounts
     */
     function withdrawFund(uint withdrawAmount) public payable onlyOwner returns(bool) {
-        require(withdrawAmount > 0, "The withdrwal amount must be a positive number!");
+        require(withdrawAmount > 1, "The withdrwal amount must be a positive number!");
         require(address(this).balance >= withdrawAmount, "The current store balance amount must be greater than the withdrawal amount!");
         owner.transfer(withdrawAmount);
 
