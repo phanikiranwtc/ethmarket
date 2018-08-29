@@ -55,6 +55,12 @@ ng serve
 ```
 Open browser and open the APP by visiting the URL: http://localhost:4200/
 
+## Login into the App
+1. By default the first account in Ganache will be used as coinbase and this account is considered the SuperAdmin. Also, it gets added as Admin by default. So, you need to first copy this account address and use that for login. There is no password or security, so it will just take you inside the DAPP
+2. After this you can add more Admin and Store owners
+3. You can use the corresponding address to perform related actions
+4. By default every account is a shopping account. 
+
 # Troubleshooting
 You may need to run the following command in the main project directory as well as the dapp directory:
 ```
@@ -68,3 +74,5 @@ Also, refer to the network config options in the truffle.js file and adjust gas 
 ## On Windows machine
 On windows machine you may need to copy the truffle.js file into truffle-config.js file. 
 
+## Real Ether Transfer through DAPP
+During the purchase of the product, the ether transfer from shopper's account to the store contract's account work alright. However, when I am trying to do the same from the DAPP, it is still causing the issue. Comment out the transfer (myAddress.transfer( finalAmountToBePaid );) call in buyProductFromStore method to test the rest of the functionality. 
