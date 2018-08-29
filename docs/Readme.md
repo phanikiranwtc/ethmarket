@@ -14,10 +14,17 @@ Refer to the below URL for complete details about the requirement: https://githu
 $ mkdir marketplace
 $ cd marketplace/
 ```
-Clone / Download the files in this repository:
-https://github.com/wtcalok/ethmarket.git
+Clone / Download the files in this repository: https://github.com/wtcalok/ethmarket.git
+
+```
+git clone https://github.com/wtcalok/ethmarket.git
+```
 
 ## Compile and Deploy Contract
+cd to the main project directory and run the following command to ensure that dependencies are installed
+```
+npm install
+```
 Use the following command to deploy / redeploy the contract in the test environment:
 ```
 truffle migrate --reset --compile-all --network ganache
@@ -49,7 +56,12 @@ As part of this project I have also used EIP20 tokens to help with the discount 
 Refer to unit test case to see how to transfer tokens from SuperAdmin to Store Owners. 
 
 # Launching the DAPP
-Go to the dapp directory and run the following command
+Go to the dapp directory and run the following command to install all the dependencies
+```
+npm install
+```
+
+Run the following command to run the http server:
 ```
 ng serve
 ```
