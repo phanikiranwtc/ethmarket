@@ -50,6 +50,11 @@ Also, run the following command, which specifies how to test the negative scenar
 truffle test --network ganache
 ```
 
+### Circuit Breaker
+ emergencyFlag to true and run 1_HappyPath.js  test to see what happens when you use the circuit breaker pattern. 
+ 
+ Reset this flag to false to test the scenarios in the regular case.
+
 ## Usage of EIP20 tokens
 As part of this project I have also used EIP20 tokens to help with the discount functionality in the market place. While the front-end doesn't talk anything explicitly about this, you may need to transfer tokens explicitly to the store owners to see the functionality in actions.
 
