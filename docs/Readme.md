@@ -61,6 +61,15 @@ Open browser and open the APP by visiting the URL: http://localhost:4200/
 3. You can use the corresponding address to perform related actions
 4. By default every account is a shopping account. 
 
+# Avoiding Common Attacks
+Steps taken to avoid common attacks are described in avoiding_common_attacks.md.
+https://github.com/wtcalok/ethmarket/blob/master/docs/avoiding_common_attacks.md
+
+# Design Patterns
+The design patterns used in the project are described in design_pattern_descision.md.
+https://github.com/wtcalok/ethmarket/blob/master/docs/design_pattern_desicions.md
+
+
 # Troubleshooting
 You may need to run the following command in the main project directory as well as the dapp directory:
 ```
