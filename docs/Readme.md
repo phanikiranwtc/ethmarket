@@ -60,6 +60,7 @@ Open browser and open the APP by visiting the URL: http://localhost:4200/
 2. After this you can add more Admin and Store owners
 3. You can use the corresponding address to perform related actions
 4. By default every account is a shopping account. 
+5. Login with Metamask and choose localhost:8545 as the network. Make sure that your ganache runs on this port. 
 
 # Avoiding Common Attacks
 Steps taken to avoid common attacks are described in avoiding_common_attacks.md.
