@@ -103,3 +103,12 @@ On windows machine you may need to copy the truffle.js file into truffle-config.
 
 ## Real Ether Transfer through DAPP
 During the purchase of the product, the ether transfer from shopper's account to the store contract's account work alright. However, when I am trying to do the same from the DAPP, it is still causing the issue. Comment out the transfer (myAddress.transfer( finalAmountToBePaid );) call in buyProductFromStore method to test the rest of the functionality. 
+
+## Nonce related issue
+Sometimes Metamask gives nonce related issue. In such case, please clean up Metamask by following the below steps
+1. Press the Metamask icon
+2. reset Metamask by going into Settings > Reset Account
+3. Logout 
+4. Login again
+
+If needed, do delete existing accounts and import the accounts corresponding to your Ganache. 
