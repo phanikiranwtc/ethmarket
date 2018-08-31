@@ -127,6 +127,16 @@ NEMONIC="orphan blur library flame donkey damp destroy shallow kind float warrio
 ENDPOINT_KEY="9f110b8c7a7a41febca9c060f2d90e53"
 ```
 
+Install HDWalletProvider to sign transactions for addresses derived from a 12-word mnemonic 
+```
+npm install truffle-hdwallet-provider
+```
+
+Install dotenv, a zero-dependency module, that loads environment variables from a .env file into process.env:
+```
+npm install dotenv
+```
+
 You may like to add your own nemonic and Infura endpoint key to avoid surprizes.  
 
 For more details about INFURA deployment, please visit below URL:
