@@ -87,6 +87,33 @@ https://github.com/wtcalok/ethmarket/blob/master/docs/avoiding_common_attacks.md
 The design patterns used in the project are described in design_pattern_descision.md.
 https://github.com/wtcalok/ethmarket/blob/master/docs/design_pattern_desicions.md
 
+# Deployed Contract on Rinkeby
+Please visit below URL to see the deployed contract on Rinkeby
+https://rinkeby.etherscan.io/address/0x257cceeaeca1f05eb66af7aa3571a322f2125fdd
+
+You need to add the following network options in truffle.js file
+```
+rinkeby:{
+      host: "localhost",
+      provider: function() {
+        return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/9f110b8c7a7a41febca9c060f2d90e53")
+      },
+      network_id:4
+      , gas : 6700000
+      , gasPrice : 10000000000
+    }
+```
+
+Also, somehow the contract seems to be needing more gas, so please do use solc configuration as shown below:
+```
+solc: {
+    optimizer: {
+      enabled: true,
+      runs: 200
+    }
+  }
+```
+
 
 # Troubleshooting
 You may need to run the following command in the main project directory as well as the dapp directory:
