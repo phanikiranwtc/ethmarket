@@ -87,21 +87,28 @@ https://github.com/wtcalok/ethmarket/blob/master/docs/avoiding_common_attacks.md
 The design patterns used in the project are described in design_pattern_descision.md.
 https://github.com/wtcalok/ethmarket/blob/master/docs/design_pattern_desicions.md
 
-# Deployed Contract on Rinkeby
+# Deployed Contract on Rinkeby using Infura
 Please visit below URL to see the deployed contract on Rinkeby
 https://rinkeby.etherscan.io/address/0x257cceeaeca1f05eb66af7aa3571a322f2125fdd
+Add following code on top of the truffle.js file
+```
+require('dotenv').config();
+var HDWalletProvider = require("truffle-hdwallet-provider");
+var mnemonic = process.env["NEMONIC"];
+var providerKey = process.env["ENDPOINT_KEY"];
+```
 
 You need to add the following network options in truffle.js file
 ```
 rinkeby:{
       host: "localhost",
       provider: function() {
-        return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/9f110b8c7a7a41febca9c060f2d90e53")
+        return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/"+providerKey);
       },
       network_id:4
       , gas : 6700000
       , gasPrice : 10000000000
-    }
+   }
 ```
 
 Also, somehow the contract seems to be needing more gas, so please do use solc configuration as shown below:
@@ -114,6 +121,16 @@ solc: {
   }
 ```
 
+Also, create a .env file in the root folder of the project and add the following content in that file:
+```
+NEMONIC="orphan blur library flame donkey damp destroy shallow kind float warrior badge"
+ENDPOINT_KEY="9f110b8c7a7a41febca9c060f2d90e53"
+```
+
+You may like to add your own nemonic and Infura endpoint key to avoid surprizes.  
+
+For more details about INFURA deployment, please visit below URL:
+https://truffleframework.com/tutorials/using-infura-custom-provider
 
 # Troubleshooting
 You may need to run the following command in the main project directory as well as the dapp directory:
